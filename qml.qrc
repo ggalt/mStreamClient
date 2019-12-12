@@ -4,9 +4,10 @@
         <file>qtquickcontrols2.conf</file>
         <file>JSONListModel.qml</file>
         <file>jsonpath.js</file>
-        <file>ArtistDelegate.qml</file>
         <file>menu.png</file>
         <file>HomeForm.qml</file>
         <file>SettingsForm.qml</file>
+        <file>ArtistForm.qml</file>
+        <file>NowPlayingForm.qml</file>
     </qresource>
 </RCC>

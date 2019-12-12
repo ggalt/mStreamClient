@@ -100,7 +100,7 @@ ApplicationWindow {
         console.log(xmlhttp.responseText)
         artistJSONModel.json = xmlhttp.responseText
         artistJSONModel.query = "$.artists[*]"
-        navView.setCurrentIndex(0)
+        stackView.push(artistPage)
     }
 
     function requestAlbums() {
@@ -155,98 +155,10 @@ ApplicationWindow {
         id: drawer
         width: mainWindow.width * 0.66
         height: mainWindow.height
-        Item {
-            anchors.fill: parent
-            Label {
-                id: label
-                x: 48
-                y: 48
-                text: qsTr("ServerURL:")
-            }
+        SettingsForm {
 
-            TextField {
-                id: txtServerURL
-                x: 123
-                y: 36
-                width: 392
-                height: 40
-                text: qsTr("Text Field")
-            }
-
-            GroupBox {
-                id: groupBox
-                x: 48
-                y: 165
-                width: 467
-                height: 183
-                title: qsTr("Credentials")
-                enabled: checkLogin.checked
-
-                TextField {
-                    id: txtPassword
-                    x: 93
-                    y: 68
-                    width: 346
-                    height: 40
-                    text: qsTr("")
-                }
-
-                TextField {
-                    id: txtUserName
-                    x: 93
-                    y: 21
-                    width: 346
-                    height: 40
-                    text: qsTr("")
-                }
-
-                Switch {
-                    id: checkSession
-                    x: 5
-                    y: 114
-                    width: 189
-                    height: 31
-                    text: qsTr("Preserve Session")
-                }
-
-                Label {
-                    id: label2
-                    x: 5
-                    y: 80
-                    text: qsTr("Password:")
-                }
-
-                Label {
-                    id: label1
-                    x: 5
-                    y: 33
-                    text: qsTr("Username:")
-                }
-            }
-
-            Switch {
-                id: checkLogin
-                x: 48
-                y: 93
-                text: qsTr("Use login credentials")
-            }
-
-            Button {
-                id: btnOK
-                x: 48
-                y: 365
-                text: qsTr("OK")
-                onClicked: drawer.close()
-            }
-
-            Button {
-                id: btnCancel
-                x: 185
-                y: 365
-                text: qsTr("Cancel")
-                onClicked: drawer.close()
-            }
         }
+
     }
 
     Frame {
@@ -268,58 +180,44 @@ ApplicationWindow {
             anchors.leftMargin: 0
             anchors.topMargin: 0
             anchors.fill: parent
+
             initialItem: "HomeForm.qml"
+
+            pushEnter: Transition {
+                PropertyAnimation {
+                    property: "opacity"
+                    from: 0
+                    to:1
+                    duration: 200
+                }
+            }
+            pushExit: Transition {
+                PropertyAnimation {
+                    property: "opacity"
+                    from: 1
+                    to:0
+                    duration: 200
+                }
+            }
+            popEnter: Transition {
+                PropertyAnimation {
+                    property: "opacity"
+                    from: 0
+                    to:1
+                    duration: 200
+                }
+            }
+            popExit: Transition {
+                PropertyAnimation {
+                    property: "opacity"
+                    from: 1
+                    to:0
+                    duration: 200
+                }
+            }
         }
 
     }
-
-//    ScrollView {
-//        id: scrollView
-//        anchors.fill: parent
-//        clip: true
-
-//        ListView {
-//            id: listView
-//            anchors.fill: parent
-//            delegate: Item {
-//                x: 5
-//                width: 80
-//                height: 40
-//                Row {
-//                    id: row1
-//                    Button {
-//                        width: 40
-//                        height: 40
-//                        onClicked: actionClick(name)
-//                    }
-
-//                    Text {
-//                        text: name
-//                        anchors.verticalCenter: parent.verticalCenter
-//                        font.bold: true
-//                    }
-//                    spacing: 10
-//                }
-//            }
-//            model: ListModel {
-//                ListElement {
-//                    name: "Login"
-//                }
-
-//                ListElement {
-//                    name: "Artists"
-//                }
-
-//                ListElement {
-//                    name: "Albums"
-//                }
-
-//                ListElement {
-//                    name: "Playlists"
-//                }
-//            }
-//        }
-//    }
 
 
     Frame {
@@ -333,65 +231,6 @@ ApplicationWindow {
         anchors.top: toolBar.bottom
         anchors.topMargin: 0
 
-        SwipeView {
-            id: navView
-            anchors.fill: parent
-            clip: true
-            Item {
-                id: artistPage
-                ListView {
-                    anchors.fill: parent
-                    model: artistJSONModel.model
-                    delegate: ArtistDelegate {
-                        artistName: model.name
-                    }
-
-//                    delegate: Rectangle {
-//                        height: 40
-//                        border.width: 0
-
-//                        Label {
-//                            id: artistLabel
-//                            text: model.name
-//                            font.pointSize: 12
-//                            font.family: "Arial"
-//                            verticalAlignment: Text.AlignVCenter
-//                            anchors.leftMargin: 10
-//                            anchors.fill: parent
-//                        }
-
-//                        MouseArea {
-//                            id: mouseArea
-//                            anchors.fill: parent
-//                            onPressAndHold: console.log("Press and Hold for:", artistName.text)
-//                            onClicked: console.log("click for:", artistName.text)
-//                        }
-//                    }
-
-
-//                    delegate: Component {
-//                        Text {
-//                            text: model.name
-//                        }
-//                    }
-                }
-            }
-            Item {
-                id: secondPage
-            }
-            Item {
-                id: thirdPage
-            }
-        }
-        PageIndicator {
-            id: indicator
-
-            count: navView.count
-            currentIndex: navView.currentIndex
-
-            anchors.bottom: navView.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-        }
     }
 
     Component.onCompleted: sendLogin()

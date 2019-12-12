@@ -82,6 +82,7 @@ Item {
         x: 48
         y: 365
         text: qsTr("OK")
+        onClicked: drawer.close()
     }
 
     Button {
@@ -89,6 +90,7 @@ Item {
         x: 185
         y: 365
         text: qsTr("Cancel")
+        onClicked: drawer.close()
     }
 }
 

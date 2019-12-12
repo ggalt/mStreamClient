@@ -26,7 +26,6 @@ Item {
                 id: delMouse
                 anchors.fill: parent
                 onClicked: {
-                    homeDelegate.state = "Standard"
                     homeDelegate.ListView.view.currentIndex=index
                     console.log("clicked at", index, name)
                     mainWindow.actionClick(name)
