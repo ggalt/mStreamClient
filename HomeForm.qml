@@ -1,6 +1,9 @@
 import QtQuick 2.0
 
 Item {
+
+    property string formName: "Home"
+
     ListView {
         id: listView
         anchors.fill: parent

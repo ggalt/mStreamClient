@@ -4,6 +4,9 @@ import QtQuick.Controls 2.13
 
 Item {
     id: artistPage
+
+    property string formName: "Artist List"
+
     ListView {
         anchors.fill: parent
         model: artistJSONModel.model
@@ -11,6 +14,7 @@ Item {
         delegate: Item {
             id: artistDelegate
             height: 42
+            width: parent.width
 
             MouseArea {
                 id: mouseArea
@@ -23,9 +27,10 @@ Item {
                 onClicked: {
                     artistDelegate.ListView.view.currentIndex=index
                     console.log("click for:", artistLabel.text)
+                    mainWindow.requestArtistAlbums(artistLabel.text)
                 }
-                onPressed: artistDelegate.color = "lightgrey"
-                onReleased: artistDelegate.color = "white"
+                onPressed: artistDelegateRect.color = "lightgrey"
+                onReleased: artistDelegateRect.color = "white"
             }
 
             Rectangle {
@@ -42,7 +47,6 @@ Item {
                     font.pointSize: 12
                     font.family: "Arial"
                     verticalAlignment: Text.AlignVCenter
-                    anchors.fill: parent
                 }
             }
 

@@ -27,6 +27,10 @@ ApplicationWindow {
         objNm: "name"
     }
 
+    JSONListModel {
+        id: albumJSONModel
+    }
+
     property string myToken: ''
     property string serverURL: "http://192.168.1.50:3000"
     property string usrnm: "dummy"
@@ -100,7 +104,7 @@ ApplicationWindow {
         console.log(xmlhttp.responseText)
         artistJSONModel.json = xmlhttp.responseText
         artistJSONModel.query = "$.artists[*]"
-        stackView.push(artistPage)
+        stackView.push( "qrc:/ArtistForm.qml" )
     }
 
     function requestAlbums() {
@@ -109,6 +113,9 @@ ApplicationWindow {
 
     function albumRequestResp(xmlhttp) {
         console.log(xmlhttp.responseText.substring(1,5000))
+        albumJSONModel.json = xmlhttp.responseText
+        albumJSONModel.query = "$.albums[*]"
+        stackView.push("qrc:/AlbumForm.qml")
     }
 
     function requestArtistAlbums(artistName) {
@@ -135,7 +142,7 @@ ApplicationWindow {
         ToolButton {
             id: toolButton
             text: stackView.depth > 1 ? "\u25C0" : "\u2630"
-            font.pixelSize: Qt.application.font.pixelSize * 1.6
+            font.pointSize: 18
             onClicked: {
                 if (stackView.depth > 1) {
                     stackView.pop()
@@ -146,8 +153,9 @@ ApplicationWindow {
         }
 
         Label {
-            text: "stackView.currentItem.title"
+            text: stackView.currentItem.formName
             anchors.centerIn: parent
+            font.pointSize: 20
         }
     }
 
@@ -180,6 +188,8 @@ ApplicationWindow {
             anchors.leftMargin: 0
             anchors.topMargin: 0
             anchors.fill: parent
+
+            clip: true
 
             initialItem: "HomeForm.qml"
 
