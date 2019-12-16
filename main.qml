@@ -2,7 +2,7 @@ import QtQuick 2.13
 import QtQuick.Controls 2.13
 import QtQml 2.12
 import Qt.labs.settings 1.1
-
+import com.georgegalt.messenger 1.0
 
 
 ApplicationWindow {
@@ -23,12 +23,24 @@ ApplicationWindow {
     }
 
     JSONListModel {
-        id: artistJSONModel
+        id: artistListJSONModel
         objNm: "name"
     }
 
     JSONListModel {
-        id: albumJSONModel
+        id: albumListJSONModel
+    }
+
+    JSONListModel {
+        id: songListJSONModel
+    }
+
+    JSONListModel {
+        id: songTitleJSONModel
+    }
+
+    Messenger {
+        id:messenger
     }
 
     property string myToken: ''
@@ -51,6 +63,8 @@ ApplicationWindow {
                     console.log(xmlhttp.responseText)
                     var resp = JSON.parse(xmlhttp.responseText)
                     myToken = resp.token
+                    messenger.imageServerURL = serverURL+"/album-art/"
+                    messenger.accessToken = myToken
                     console.log(resp.token)
                     console.log("end")
                 } else {
@@ -102,8 +116,8 @@ ApplicationWindow {
 
     function artistsRequestResp(xmlhttp) {
         console.log(xmlhttp.responseText)
-        artistJSONModel.json = xmlhttp.responseText
-        artistJSONModel.query = "$.artists[*]"
+        artistListJSONModel.json = xmlhttp.responseText
+        artistListJSONModel.query = "$.artists[*]"
         stackView.push( "qrc:/ArtistForm.qml" )
     }
 
@@ -113,8 +127,8 @@ ApplicationWindow {
 
     function albumRequestResp(xmlhttp) {
         console.log(xmlhttp.responseText.substring(1,5000))
-        albumJSONModel.json = xmlhttp.responseText
-        albumJSONModel.query = "$.albums[*]"
+        albumListJSONModel.json = xmlhttp.responseText
+        albumListJSONModel.query = "$.albums[*]"
         stackView.push("qrc:/AlbumForm.qml")
     }
 

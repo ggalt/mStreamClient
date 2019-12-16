@@ -9,7 +9,7 @@ Item {
 
     ListView {
         anchors.fill: parent
-        model: artistJSONModel.model
+        model: artistListJSONModel.model
 
         delegate: Item {
             id: artistDelegate

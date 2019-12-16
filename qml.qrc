@@ -11,5 +11,6 @@
         <file>NowPlayingForm.qml</file>
         <file>AlbumForm.qml</file>
         <file>music_default.png</file>
+        <file>SongForm.qml</file>
     </qresource>
 </RCC>

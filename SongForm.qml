@@ -3,16 +3,16 @@ import QtQuick.Controls 2.13
 
 
 Item {
-    id: albumPage
+    id: songPage
 
-    property string formName: "Album List"
+    property string formName: "Song List"
 
     ListView {
         anchors.fill: parent
-        model: albumListJSONModel.model
+        model: songListJSONModel.model
 
         delegate: Item {
-            id: albumDelegate
+            id: songDelegate
             height: 42
             width: parent.width
 
@@ -21,37 +21,37 @@ Item {
                 anchors.fill: parent
 
                 onPressAndHold: {
-                    console.log("Press and Hold for:", albumLabel.text)
+                    console.log("Press and Hold for:", songLabel.text)
                 }
 
                 onClicked: {
-                    albumDelegate.ListView.view.currentIndex=index
-                    console.log("click for:", albumLabel.text)
-//                    mainWindow.requestalbumAlbums(albumLabel.text)
+                    songDelegate.ListView.view.currentIndex=index
+                    console.log("click for:", songLabel.text)
+//                    mainWindow.requestsongsongs(songLabel.text)
                 }
-                onPressed: albumDelegateRect.color = "lightgrey"
-                onReleased: albumDelegateRect.color = "white"
+                onPressed: songDelegateRect.color = "lightgrey"
+                onReleased: songDelegateRect.color = "white"
             }
 
             Rectangle {
-                id: albumDelegateRect
+                id: songDelegateRect
                 color: "white"
                 anchors.fill: parent
                 anchors.margins: 1
                 Image {
-                    id: albumImage
+                    id: songImage
                     height: parent.height
                     width: parent.height
                     anchors.left: parent.left
                     anchors.leftMargin: 5
                     anchors.top: parent.top
                     fillMode: Image.PreserveAspectFit
-                    source: "image://albumImage/album-art/"+model.album_art_file
+                    source: "qrc:/music_default.png"
                 }
                 Text {
-                    id: albumLabel
+                    id: songLabel
                     text: model.name
-                    anchors.left: albumImage.right
+                    anchors.left: songImage.right
                     anchors.leftMargin: 5
                     height: parent.height
                     font.pointSize: 12
