@@ -2,7 +2,6 @@ import QtQuick 2.13
 import QtQuick.Controls 2.13
 import QtQml 2.12
 import Qt.labs.settings 1.1
-import com.georgegalt.messenger 1.0
 
 
 ApplicationWindow {
@@ -39,10 +38,6 @@ ApplicationWindow {
         id: songTitleJSONModel
     }
 
-    Messenger {
-        id:messenger
-    }
-
     property string myToken: ''
     property string serverURL: "http://192.168.1.50:3000"
     property string usrnm: "dummy"
@@ -63,8 +58,6 @@ ApplicationWindow {
                     console.log(xmlhttp.responseText)
                     var resp = JSON.parse(xmlhttp.responseText)
                     myToken = resp.token
-                    messenger.imageServerURL = serverURL+"/album-art/"
-                    messenger.accessToken = myToken
                     console.log(resp.token)
                     console.log("end")
                 } else {
@@ -73,7 +66,6 @@ ApplicationWindow {
             }
         }
 
-//        xmlhttp.send(JSON.stringify({ "username": "dummy", "password": "dumbo" }));
         xmlhttp.send(JSON.stringify({ "username": usrnm, "password": passwrd }));
     }
 
@@ -114,15 +106,25 @@ ApplicationWindow {
         serverCall("/db/artists", '', "GET", artistsRequestResp)
     }
 
+    function requestAlbums() {
+        serverCall("/db/albums", '', "GET", albumRequestResp)
+    }
+
+    function requestArtistAlbums(artistName) {
+        console.log("Requesting albums for:", artistName)
+        serverCall("/db/artists-albums", JSON.stringify({ 'artist' : artistName }), "POST", albumRequestResp)
+    }
+
+    function requestAlbumSongs(albumName) {
+        console.log("Requesting songs for album:", albumName)
+        serverCall("/db/album-songs", JSON.stringify({ 'album' : albumName }), "POST", songRequestResp)
+    }
+
     function artistsRequestResp(xmlhttp) {
         console.log(xmlhttp.responseText)
         artistListJSONModel.json = xmlhttp.responseText
         artistListJSONModel.query = "$.artists[*]"
         stackView.push( "qrc:/ArtistForm.qml" )
-    }
-
-    function requestAlbums() {
-        serverCall("/db/albums", '', "GET", albumRequestResp)
     }
 
     function albumRequestResp(xmlhttp) {
@@ -132,10 +134,15 @@ ApplicationWindow {
         stackView.push("qrc:/AlbumForm.qml")
     }
 
-    function requestArtistAlbums(artistName) {
-        console.log("Requesting albums for:", artistName)
-        serverCall("/db/artists-albums", JSON.stringify({ 'artist' : artistName }), "POST", albumRequestResp)
+    function songRequestResp(xmlhttp) {
+        console.log('{"songs" : '+xmlhttp.responseText+"}")
+        songListJSONModel.json = '{"songs" : '+xmlhttp.responseText+"}"
+        songListJSONModel.query = "$.songs[*]"
+        console.log("Model JSON", songListJSONModel.model)
+        stackView.push( "qrc:/SongForm.qml" )
     }
+
+
 
     function actionClick(action) {
         if(action === "Artists") {

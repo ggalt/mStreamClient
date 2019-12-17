@@ -50,7 +50,7 @@ Item {
                 }
                 Text {
                     id: songLabel
-                    text: model.name
+                    text: model.title
                     anchors.left: songImage.right
                     anchors.leftMargin: 5
                     height: parent.height

@@ -13,7 +13,7 @@ Item {
 
         delegate: Item {
             id: albumDelegate
-            height: 42
+            height: 87
             width: parent.width
 
             MouseArea {
@@ -27,7 +27,7 @@ Item {
                 onClicked: {
                     albumDelegate.ListView.view.currentIndex=index
                     console.log("click for:", albumLabel.text)
-//                    mainWindow.requestalbumAlbums(albumLabel.text)
+                    mainWindow.requestAlbumSongs(albumLabel.text)
                 }
                 onPressed: albumDelegateRect.color = "lightgrey"
                 onReleased: albumDelegateRect.color = "white"
@@ -40,13 +40,13 @@ Item {
                 anchors.margins: 1
                 Image {
                     id: albumImage
-                    height: parent.height
-                    width: parent.height
+                    height: parent.height - 4
+                    width: parent.height - 4
                     anchors.left: parent.left
                     anchors.leftMargin: 5
-                    anchors.top: parent.top
+                    anchors.verticalCenter: parent.verticalCenter
                     fillMode: Image.PreserveAspectFit
-                    source: "image://albumImage/album-art/"+model.album_art_file
+                    source: mainWindow.serverURL+"/album-art/"+model.album_art_file+"?token="+mainWindow.myToken
                 }
                 Text {
                     id: albumLabel
