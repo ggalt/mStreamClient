@@ -51,6 +51,8 @@ Item {
 
     function parseJSONString(jsonString, jsonPathQuery) {
         var objectArray = JSON.parse(jsonString);
+        console.log(objectArray[1].filepath);
+        console.log(jsonString);
         if ( jsonPathQuery !== "" )
             objectArray = JSONPath.jsonPath(objectArray, jsonPathQuery);
 
