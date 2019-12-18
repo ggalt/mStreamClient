@@ -19,18 +19,46 @@ Item {
             MouseArea {
                 id: mouseArea
                 anchors.fill: parent
+                acceptedButtons: Qt.LeftButton | Qt.RightButton // default is Qt.LeftButton only
 
                 onPressAndHold: {
                     console.log("Press and Hold for:", artistLabel.text)
+                    contextMenu.popup()
                 }
 
                 onClicked: {
-                    artistDelegate.ListView.view.currentIndex=index
-                    console.log("click for:", artistLabel.text)
-                    mainWindow.requestArtistAlbums(artistLabel.text)
+                    if( mouse.button === Qt.RightButton) {
+                        contextMenu.popup()
+                    } else {
+                        artistDelegate.ListView.view.currentIndex=index
+                        console.log("click for:", artistLabel.text)
+                        mainWindow.requestArtistAlbums(artistLabel.text)
+                    }
                 }
+
+                onDoubleClicked: {
+                    console.log("doubleclick")
+
+                }
+
                 onPressed: artistDelegateRect.color = "lightgrey"
                 onReleased: artistDelegateRect.color = "white"
+
+                Menu {
+                    id: contextMenu
+                    MenuItem{
+                        text: "Add to Playlist"
+//                        mainWindows.updatePlaylist(artistLabel.text, "artist", "add")
+                    }
+                    MenuItem {
+                        text: "Replace Playlist With"
+                    }
+                    onClosed: {
+                        if( contextMenu.currentIndex === 1 ) {
+                            console.log("context menu item:", contextMenu.currentIndex)
+                        }
+                    }
+                }
             }
 
             Rectangle {

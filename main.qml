@@ -38,10 +38,14 @@ ApplicationWindow {
         id: songTitleJSONModel
     }
 
+    var playList = {}
+    var nowPlaying = {}
+
     property string myToken: ''
     property string serverURL: "http://192.168.1.50:3000"
     property string usrnm: "dummy"
     property string passwrd: "dumbo"
+
 
     function sendLogin() {
         var xmlhttp = new XMLHttpRequest();
@@ -145,8 +149,6 @@ ApplicationWindow {
         stackView.push( "qrc:/SongForm.qml" )
     }
 
-
-
     function actionClick(action) {
         if(action === "Artists") {
             console.log("Artist Click")
@@ -156,6 +158,52 @@ ApplicationWindow {
             requestAlbums();
         } else if (action === "Playlists") {
             console.log("Playlist Click")
+        }
+    }
+
+    function updatePlaylist(m_item, typeOfItem, action) { // m_item needs to be the name of an artist, album, playlist or song
+        if(action === "Replace") {
+            playList = []
+        }
+
+        if(typeOfItem === "artist") {
+            playlistAddArtist(m_item)
+        } else if( typeOfItem === "album") {
+            playlistAddAlbum(m_item)
+        } else if( typeOfItem === "playlist") {
+            playlistAddPlaylist(m_item)
+        } else {
+            playlistAddSong(item)
+        }
+    }
+
+    function playlistAddSong(songObj) {   // this actually adds the songs to our playlist
+        playList.push(songObj)
+    }
+
+    function playlistAddAlbum(title) {  // add songs from album
+        serverCall("/db/album-songs", JSON.stringify({ 'album' : title }), "POST", playlistAddAlbumResp)
+    }
+
+    function playlistAddArtist(title) { // add albums from artist
+        serverCall("/db/artists-albums", JSON.stringify({ 'artist' : title }), "POST", playlistAddArtistResp)
+    }
+
+    function playlistAddPlaylist(title) {
+
+    }
+
+    function playlistAddAlbumResp(resp) {
+        var albumResp = JSON.parse(resp.responseText)
+        for( var i = 0; i < albumResp.length; i++ ) {
+            playlistAddSong(albumResp[i])
+        }
+    }
+
+    function playlistAddArtistResp(resp) {
+        var artistResp = JSON.parse(resp.responseText)
+        for( var i = 0; i < artistResp.length; i++) {
+            playlistAddAlbum(artistResp[i])
         }
     }
 
