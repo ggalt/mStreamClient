@@ -8,6 +8,7 @@ Item {
     property string formName: "Song List"
 
     ListView {
+        id: songList
         anchors.fill: parent
         model: songListJSONModel.model
 
@@ -26,8 +27,7 @@ Item {
 
                 onClicked: {
                     songDelegate.ListView.view.currentIndex=index
-                    console.log("click for:", songLabel.text)
-//                    mainWindow.requestsongsongs(songLabel.text)
+                    console.log("click for:", songListJSONModel.get(index).metadata.title)
                 }
                 onPressed: songDelegateRect.color = "lightgrey"
                 onReleased: songDelegateRect.color = "white"
@@ -46,11 +46,11 @@ Item {
                     anchors.leftMargin: 5
                     anchors.top: parent.top
                     fillMode: Image.PreserveAspectFit
-                    source: "qrc:/music_default.png"
+                    source: mainWindow.serverURL+"/album-art/"+model.metadata.album-art+"?token="+mainWindow.myToken
                 }
                 Text {
                     id: songLabel
-                    text: model.title
+                    text: model.metadata.title
                     anchors.left: songImage.right
                     anchors.leftMargin: 5
                     height: parent.height

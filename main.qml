@@ -135,10 +135,13 @@ ApplicationWindow {
     }
 
     function songRequestResp(xmlhttp) {
-        console.log('{"songs" : '+xmlhttp.responseText+"}")
-        songListJSONModel.json = '{"songs" : '+xmlhttp.responseText+"}"
-        songListJSONModel.query = "$.songs[*]"
-        console.log("Model JSON", songListJSONModel.model)
+//        console.log('{"songs" : '+xmlhttp.responseText+"}")
+//        songListJSONModel.json = '{"songs" : '+xmlhttp.responseText+"}"
+        songListJSONModel.json = xmlhttp.responseText
+
+//        songListJSONModel.query = "$[?@filepath[*]]"
+        console.log( "++++size of song list is:" +songListJSONModel.count)
+//        console.log("Model JSON", songListJSONModel.model)
         stackView.push( "qrc:/SongForm.qml" )
     }
 
