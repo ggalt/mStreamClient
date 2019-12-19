@@ -46,7 +46,7 @@ Item {
                     anchors.leftMargin: 5
                     anchors.top: parent.top
                     fillMode: Image.PreserveAspectFit
-                    source: mainWindow.serverURL+"/album-art/"+model.metadata.album-art+"?token="+mainWindow.myToken
+                    source: mainWindow.serverURL+"/album-art/"+model.metadata["album-art"]+"?token="+mainWindow.myToken
                 }
                 Text {
                     id: songLabel

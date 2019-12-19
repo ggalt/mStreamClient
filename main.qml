@@ -38,8 +38,9 @@ ApplicationWindow {
         id: songTitleJSONModel
     }
 
-    var playList = {}
-    var nowPlaying = {}
+    property var playList: []
+    property var nowPlaying: []
+    property int currentTrack: 0
 
     property string myToken: ''
     property string serverURL: "http://192.168.1.50:3000"
@@ -77,13 +78,13 @@ ApplicationWindow {
     function serverCall(reqPath, JSONval, callType, callback) {
         var xmlhttp = new XMLHttpRequest();
         var url = serverURL+reqPath;
-        console.log("Request info:", callType, url);
+        console.log("Request info:", callType, url, JSONval);
         xmlhttp.open(callType, url, true);
         xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xmlhttp.setRequestHeader("datatype", "json");
 
         if( myToken !== '' ) {
-            console.log("sending token")
+            console.log("setting token")
             xmlhttp.setRequestHeader("x-access-token", myToken)
         }
 
@@ -91,6 +92,7 @@ ApplicationWindow {
             xmlhttp.onreadystatechange = function(){
                 if(xmlhttp.readyState === 4) {
                     if(xmlhttp.status === 200) {
+                        console.log("callback called")
                         callback(xmlhttp);
                     } else {
                         console.log("error: " + xmlhttp.status)
@@ -139,7 +141,7 @@ ApplicationWindow {
     }
 
     function songRequestResp(xmlhttp) {
-//        console.log('{"songs" : '+xmlhttp.responseText+"}")
+        console.log('{"songs" : '+xmlhttp.responseText+"}")
 //        songListJSONModel.json = '{"songs" : '+xmlhttp.responseText+"}"
         songListJSONModel.json = xmlhttp.responseText
 
@@ -162,8 +164,9 @@ ApplicationWindow {
     }
 
     function updatePlaylist(m_item, typeOfItem, action) { // m_item needs to be the name of an artist, album, playlist or song
-        if(action === "Replace") {
-            playList = []
+        console.log("Update Playlist", m_item, typeOfItem, action)
+        if(action === "replace") {
+            playList.clear()
         }
 
         if(typeOfItem === "artist") {
@@ -179,6 +182,8 @@ ApplicationWindow {
 
     function playlistAddSong(songObj) {   // this actually adds the songs to our playlist
         playList.push(songObj)
+        console.log("playlist count:", playList.length)
+        console.log("filepath:", playList[playList.length-1].filepath)
     }
 
     function playlistAddAlbum(title) {  // add songs from album
@@ -202,8 +207,9 @@ ApplicationWindow {
 
     function playlistAddArtistResp(resp) {
         var artistResp = JSON.parse(resp.responseText)
-        for( var i = 0; i < artistResp.length; i++) {
-            playlistAddAlbum(artistResp[i])
+
+        for( var i = 0; i < artistResp.albums.length; i++) {
+            playlistAddAlbum(artistResp.albums[i].name)
         }
     }
 

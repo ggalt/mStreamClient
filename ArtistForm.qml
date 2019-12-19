@@ -26,6 +26,11 @@ Item {
                     contextMenu.popup()
                 }
 
+                onDoubleClicked: {
+                    console.log("doubleclick")
+
+                }
+
                 onClicked: {
                     if( mouse.button === Qt.RightButton) {
                         contextMenu.popup()
@@ -36,10 +41,6 @@ Item {
                     }
                 }
 
-                onDoubleClicked: {
-                    console.log("doubleclick")
-
-                }
 
                 onPressed: artistDelegateRect.color = "lightgrey"
                 onReleased: artistDelegateRect.color = "white"
@@ -48,15 +49,11 @@ Item {
                     id: contextMenu
                     MenuItem{
                         text: "Add to Playlist"
-//                        mainWindows.updatePlaylist(artistLabel.text, "artist", "add")
+                        onClicked: mainWindow.updatePlaylist(artistLabel.text, "artist", "add")
                     }
                     MenuItem {
                         text: "Replace Playlist With"
-                    }
-                    onClosed: {
-                        if( contextMenu.currentIndex === 1 ) {
-                            console.log("context menu item:", contextMenu.currentIndex)
-                        }
+                        onClicked: mainWindow.updatePlaylist(artistLabel.text, "artist", "replace")
                     }
                 }
             }
