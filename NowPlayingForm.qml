@@ -33,7 +33,7 @@ Item {
         Image {
             id: coverImage
             anchors.fill: parent
-            source: "qrc:/qtquickplugin/images/template_image.png"
+            source:  mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
             fillMode: Image.PreserveAspectFit
         }
     }

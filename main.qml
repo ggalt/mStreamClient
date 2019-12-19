@@ -2,6 +2,7 @@ import QtQuick 2.13
 import QtQuick.Controls 2.13
 import QtQml 2.12
 import Qt.labs.settings 1.1
+import QtMultimedia 5.12
 
 
 ApplicationWindow {
@@ -41,6 +42,7 @@ ApplicationWindow {
     property var playList: []
     property var nowPlaying: []
     property int currentTrack: 0
+    property bool isPlaying: false
 
     property string myToken: ''
     property string serverURL: "http://192.168.1.50:3000"
@@ -231,7 +233,7 @@ ApplicationWindow {
         }
 
         Label {
-            text: stackView.currentItem.formName
+            text: isPlaying ? "Artist:"+playList[currentTrack].metadata["artist"]+" - Title:"+ playList[currentTrack].metadata["title"] : "mStream Client"
             anchors.centerIn: parent
             font.pointSize: 20
         }
