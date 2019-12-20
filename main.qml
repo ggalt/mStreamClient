@@ -205,6 +205,11 @@ ApplicationWindow {
         for( var i = 0; i < albumResp.length; i++ ) {
             playlistAddSong(albumResp[i])
         }
+        if(!isPlaying) {
+            isPlaying = true
+            nowPlaying.visible = true
+            nowPlaying.loadPlaylist(playList)
+        }
     }
 
     function playlistAddArtistResp(resp) {
@@ -320,7 +325,10 @@ ApplicationWindow {
         anchors.bottomMargin: 0
         anchors.top: toolBar.bottom
         anchors.topMargin: 0
-
+        NowPlayingForm {
+            id: nowPlaying
+            visible: false
+        }
     }
 
     Component.onCompleted: sendLogin()
