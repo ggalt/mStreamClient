@@ -31,16 +31,16 @@ Item {
     GroupBox {
         id: defaultBehaviorGroupBox
         x: 48
-        y: 117
+        y: 308
         width: 467
-        height: 70
+        height: 75
         title: qsTr("Default Behavior")
 
         Button {
             id: btnAdd2PlayList
             x: 0
             y: -6
-            width: 139
+            width: 111
             height: 40
             text: checked ? qsTr("Add To Playlist") : qsTr("Replace Playlist")
             checkable: true
@@ -48,9 +48,27 @@ Item {
 
         Button {
             id: btnShuffle
-            x: 172
+            x: 117
             y: -6
             text: checked ? qsTr("Shuffle Tracks") : qsTr("Track Order")
+            checkable: true
+        }
+
+        Button {
+            id: btnRepeat
+            x: 230
+            y: -6
+            width: 87
+            height: 40
+            text: checked ? qsTr("Repeat") : qsTr("No Repeat")
+            checkable: true
+        }
+
+        Button {
+            id: btnAutoplay
+            x: 337
+            y: -6
+            text: checked ? qsTr("Autoplay") : qsTr("No Autoplay")
             checkable: true
         }
 
@@ -60,7 +78,7 @@ Item {
     GroupBox {
         id: groupBox
         x: 48
-        y: 220
+        y: 109
         width: 467
         height: 183
         title: qsTr("Credentials")

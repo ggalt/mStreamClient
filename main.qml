@@ -15,11 +15,11 @@ ApplicationWindow {
 
     Settings {
         id: appSettings
-        property string usrName: ""
-        property string passWrd: ""
-        property string storeToken: ""
-        property string serverURL: "http://192.168.1.50:3000"
-        property bool restoreSession: false
+        property alias settingUserName: mainWindow.usrName
+        property alias settingPassWord: mainWindow.passWord
+        property alias settingToken: mainWindow.myToken
+        property alias settingServerURL: mainWindow.serverURL
+        property alias settingSetup: mainWindow.isSetup
     }
 
     JSONListModel {
@@ -36,18 +36,21 @@ ApplicationWindow {
     }
 
     JSONListModel {
-        id: songTitleJSONModel
+        id: currentPlayListJSONModel
     }
 
     property var playList: []
     property var nowPlaying: []
     property int currentTrack: 0
     property bool isPlaying: false
+    property alias toolBarText: toolBarLabel.text
 
-    property string myToken: ''
-    property string serverURL: "http://192.168.1.50:3000"
-    property string usrnm: "dummy"
-    property string passwrd: "dumbo"
+    property string usrName: appSettings.value(settingUserName,"dummy")
+    property string passWord: appSettings.value(settingPassWord, "dumbo")
+    property string myToken: appSettings.value(storeToke, '')
+    property string serverURL: appSettings.value(settingServerURL, "http://localhost:3000")
+//    property string serverURL: appSettings.value(settingServerURL, "http://192.168.1.50:3000")
+    property bool isSetup: appSettings.value(settingSetup, false)
 
 
     function sendLogin() {
@@ -73,7 +76,7 @@ ApplicationWindow {
             }
         }
 
-        xmlhttp.send(JSON.stringify({ "username": usrnm, "password": passwrd }));
+        xmlhttp.send(JSON.stringify({ "username": usrName, "password": passWord }));
     }
 
     /// serverCall: Generic function to call the mStream server
@@ -143,13 +146,7 @@ ApplicationWindow {
     }
 
     function songRequestResp(xmlhttp) {
-        console.log('{"songs" : '+xmlhttp.responseText+"}")
-//        songListJSONModel.json = '{"songs" : '+xmlhttp.responseText+"}"
         songListJSONModel.json = xmlhttp.responseText
-
-//        songListJSONModel.query = "$[?@filepath[*]]"
-        console.log( "++++size of song list is:" +songListJSONModel.count)
-//        console.log("Model JSON", songListJSONModel.model)
         stackView.push( "qrc:/SongForm.qml" )
     }
 
@@ -169,6 +166,7 @@ ApplicationWindow {
         console.log("Update Playlist", m_item, typeOfItem, action)
         if(action === "replace") {
             playList.clear()
+            currentPlayListJSONModel.clear()
         }
 
         if(typeOfItem === "artist") {
@@ -183,6 +181,7 @@ ApplicationWindow {
     }
 
     function playlistAddSong(songObj) {   // this actually adds the songs to our playlist
+        currentPlayListJSONModel.add(songObj)
         playList.push(songObj)
         console.log("playlist count:", playList.length)
         console.log("filepath:", playList[playList.length-1].filepath)
@@ -238,6 +237,7 @@ ApplicationWindow {
         }
 
         Label {
+            id: toolBarLabel
             text: isPlaying ? "Artist:"+playList[currentTrack].metadata["artist"]+" - Title:"+ playList[currentTrack].metadata["title"] : "mStream Client"
             anchors.centerIn: parent
             font.pointSize: 20
@@ -331,7 +331,20 @@ ApplicationWindow {
         }
     }
 
-    Component.onCompleted: sendLogin()
+//    property string settingUserName: ""
+//    property string settingPassWord: ""
+//    property string settingToken: ""
+////        property string serverURL: "http://192.168.1.50:3000"
+//    property string serverURL: "http://localhost:3000"
+//    property bool restoreSession: false
+//    property bool settingsComplete: false
+
+
+
+    Component.onCompleted: {
+        if( appSettings.value )
+        sendLogin()
+    }
 }
 
 /*##^##

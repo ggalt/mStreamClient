@@ -39,13 +39,11 @@ Item {
 
         for ( var key in objectArray ) {
             var jo = objectArray[key];
-//            console.log("JO:", jo, "Is type:", typeof jo)
             if( typeof jo === 'string' ) {
                 var jojo = '{ "' + objNm + '" : "'+ jo + '" }'
                 var newJo = JSON.parse(jojo);
                 jsonModel.append(newJo);
             } else {
-//                console.log("stringified jo:", JSON.stringify(jo))
                 jsonModel.append( jo );
             }
         }
@@ -53,11 +51,20 @@ Item {
 
     function parseJSONString(jsonString, jsonPathQuery) {
         var objectArray = JSON.parse(jsonString);
-//        console.log("function parseJSONString:", jsonString);
         if ( jsonPathQuery !== "" )
             objectArray = JSONPath.jsonPath(objectArray, jsonPathQuery);
 
         return objectArray;
+    }
+
+    function clear() {
+        jsonModel.clear()
+    }
+
+    function add(jObj) {
+        if(typeof jObj === 'object') {
+            jsonModel.append(jObj)
+        }
     }
 
     function get(index) {

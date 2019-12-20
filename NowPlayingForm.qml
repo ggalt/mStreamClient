@@ -21,8 +21,27 @@ Item {
         playlist: Playlist {
             id: mediaPlayList
         }
+        onPlaybackStateChanged: {
+            console.log("onPlaybackStateChanged", playbackState)
+        }
 
-//        source: mainWindow.serverURL+"/media/"+mainWindow.playList[mainWindow.currentTrack].filepath+"?token="+mainWindow.myToken
+        onPlaylistChanged: {
+            console.log("onPlaylistChanged")
+        }
+
+        onSourceChanged: {
+            console.log("onSourceChanged")
+        }
+
+        onStatusChanged: {
+            console.log("onStatusChanged", status)
+            mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
+            console.log(mediaPlayList.currentIndex)
+        }
+
+
+
+        //        source: mainWindow.serverURL+"/media/"+mainWindow.playList[mainWindow.currentTrack].filepath+"?token="+mainWindow.myToken
     }
 
     Frame {
@@ -83,6 +102,7 @@ Item {
                 mediaPlayList.next()
             }
         }
+
     }
 
     Frame {
@@ -98,8 +118,16 @@ Item {
 
         Image {
             id: coverImage
-            anchors.fill: parent
-//            source:  mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
+            anchors.right: volTumbler.left
+            anchors.rightMargin: 5
+            anchors.bottom: progressBar.top
+            anchors.bottomMargin: 5
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            anchors.top: parent.top
+            anchors.topMargin: 5
+
+            //            source:  mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
             fillMode: Image.PreserveAspectFit
         }
 
@@ -113,6 +141,16 @@ Item {
             anchors.left: parent.left
             anchors.leftMargin: 5
             value: mediaPlayer.position /mediaPlayer.duration
+        }
+
+        Tumbler {
+            id: volTumbler
+            x: 316
+            y: 36
+            wrap: false
+            wheelEnabled: true
+            visibleItemCount: 4
+            model: 10
         }
     }
 
