@@ -34,12 +34,42 @@ Item {
         }
 
         onStatusChanged: {
-            console.log("onStatusChanged", status)
-            mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
+            console.log("onStatusChanged", getStatus(), "error state:", errorString)
+            if(mediaPlayList.currentIndex < mainWindow.playList.length && mediaPlayList.currentIndex >= 0) {
+                console.log("current index and length of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
+                mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
+            } else {
+                console.log("current index passed end of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
+            }
+
             console.log(mediaPlayList.currentIndex)
         }
 
+        function getStatus() {
+            if(status === 0)
+                return "NoMedia - no media has been set."
+            else if(status === 1)
+                return "NoMedia - no media has been set."
+            else if(status === 2)
+                return "Loading - the media is currently being loaded."
+            else if(status === 3)
+                return "Loaded - the media has been loaded."
+            else if(status === 4)
+                return "Buffering - the media is buffering data."
+            else if(status === 5)
+                return "Stalled - playback has been interrupted while the media is buffering data."
+            else if(status === 6)
+                return "Buffered - the media has buffered data."
+            else if(status === 7)
+                return "EndOfMedia - the media has played to the end."
+            else if(status === 8)
+                return "InvalidMedia - the media cannot be played."
+            else if(status === 9)
+                return "UnknownStatus - the status of the media is unknown."
+            else
+                return "really unknown status!! HELP!!"
 
+        }
 
         //        source: mainWindow.serverURL+"/media/"+mainWindow.playList[mainWindow.currentTrack].filepath+"?token="+mainWindow.myToken
     }
@@ -105,6 +135,43 @@ Item {
 
     }
 
+    Rectangle {
+        id: rectangle
+        x: 324
+        y: 61
+        width: 68
+        height: 253
+        color: "#ffffff"
+
+        Tumbler {
+            id: volTumbler
+            property int volumeRange: 10
+            property int currentVolume: mediaPlayer.volume * volumeRange
+            anchors.fill: parent
+            font.bold: true
+            font.pointSize: 19
+            wrap: false
+            wheelEnabled: false
+            visibleItemCount: 5
+            model: volumeRange + 1
+
+            currentIndex: currentVolume
+            onCurrentIndexChanged: {
+                currentVolume = currentIndex / volumeRange
+                mediaPlayer.volume = currentIndex / volumeRange
+            }
+        }
+    }
+
+    Label {
+        id: label
+        x: 345
+        y: 31
+        text: qsTr("Volume:")
+        anchors.horizontalCenter: rectangle.horizontalCenter
+        font.pointSize: 13
+    }
+
     Frame {
         id: imageFrame
         anchors.bottom: controlFrame.top
@@ -142,17 +209,9 @@ Item {
             anchors.leftMargin: 5
             value: mediaPlayer.position /mediaPlayer.duration
         }
-
-        Tumbler {
-            id: volTumbler
-            x: 316
-            y: 36
-            wrap: false
-            wheelEnabled: true
-            visibleItemCount: 4
-            model: 10
-        }
     }
+
+
 
 }
 
@@ -163,3 +222,4 @@ D{i:3;anchors_height:100;anchors_width:100;anchors_x:46;anchors_y:12}D{i:10;anch
 D{i:8;anchors_height:100;anchors_width:100;anchors_x:46;anchors_y:12}
 }
 ##^##*/
+

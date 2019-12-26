@@ -3,6 +3,10 @@ import QtQuick.Controls 2.13
 
 Item {
     anchors.fill: parent
+    property alias setServerURL: txtServerURL.text
+    property alias setUserName: txtUserName.text
+    property alias setPassword: txtPassword.text
+
     Label {
         id: label
         x: 48
@@ -138,7 +142,10 @@ Item {
         x: 48
         y: 420
         text: qsTr("OK")
-        onClicked: drawer.close()
+        onClicked:  {
+            mainWindow.setSettings()
+            drawer.close()
+        }
     }
 
 

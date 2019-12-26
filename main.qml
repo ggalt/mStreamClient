@@ -17,7 +17,7 @@ ApplicationWindow {
         id: appSettings
         property alias settingUserName: mainWindow.usrName
         property alias settingPassWord: mainWindow.passWord
-        property alias settingToken: mainWindow.myToken
+//        property alias settingToken: mainWindow.myToken
         property alias settingServerURL: mainWindow.serverURL
         property alias settingSetup: mainWindow.isSetup
     }
@@ -45,13 +45,19 @@ ApplicationWindow {
     property bool isPlaying: false
     property alias toolBarText: toolBarLabel.text
 
-    property string usrName: appSettings.value(settingUserName,"dummy")
-    property string passWord: appSettings.value(settingPassWord, "dumbo")
-    property string myToken: appSettings.value(storeToke, '')
-    property string serverURL: appSettings.value(settingServerURL, "http://localhost:3000")
-//    property string serverURL: appSettings.value(settingServerURL, "http://192.168.1.50:3000")
-    property bool isSetup: appSettings.value(settingSetup, false)
+    property string usrName: appSettings.settingUserName
+    property string passWord: appSettings.settingPassWord
+    property string myToken: ""
+    property string serverURL: appSettings.settingServerURL
+//    property string serverURL: appSettings.settingServerURL
+    property bool isSetup: appSettings.settingSetup
 
+    function setSettings() {
+        serverURL = settingForm.setServerURL
+        usrName = settingForm.setUserName
+        passWord = settingForm.setPassword
+        sendLogin()
+    }
 
     function sendLogin() {
         var xmlhttp = new XMLHttpRequest();
@@ -165,7 +171,8 @@ ApplicationWindow {
     function updatePlaylist(m_item, typeOfItem, action) { // m_item needs to be the name of an artist, album, playlist or song
         console.log("Update Playlist", m_item, typeOfItem, action)
         if(action === "replace") {
-            playList.clear()
+//            playList.clear()
+            playList.length = 0
             currentPlayListJSONModel.clear()
         }
 
@@ -183,8 +190,8 @@ ApplicationWindow {
     function playlistAddSong(songObj) {   // this actually adds the songs to our playlist
         currentPlayListJSONModel.add(songObj)
         playList.push(songObj)
-        console.log("playlist count:", playList.length)
-        console.log("filepath:", playList[playList.length-1].filepath)
+//        console.log("playlist count:", playList.length)
+//        console.log("filepath:", playList[playList.length-1].filepath)
     }
 
     function playlistAddAlbum(title) {  // add songs from album
@@ -249,7 +256,7 @@ ApplicationWindow {
         width: mainWindow.width * 0.66
         height: mainWindow.height
         SettingsForm {
-
+            id: settingForm
         }
 
     }
@@ -342,8 +349,13 @@ ApplicationWindow {
 
 
     Component.onCompleted: {
-        if( appSettings.value )
-        sendLogin()
+
+        if( serverURL.length === 0 ) {
+            // we assume that we aren't set up
+            drawer.open()
+        } else {
+            sendLogin()
+        }
     }
 }
 
