@@ -43,6 +43,7 @@ ApplicationWindow {
     property var nowPlaying: []
     property int currentTrack: 0
     property bool isPlaying: false
+    property int playlistAddAt: 0
     property alias toolBarText: toolBarLabel.text
 
     property string usrName: appSettings.settingUserName
@@ -52,8 +53,21 @@ ApplicationWindow {
 //    property string serverURL: appSettings.settingServerURL
     property bool isSetup: appSettings.settingSetup
 
+    property int gettingArtists: 0
+    property int gettingAlbums: 0
+    property int gettingTitles: 0
+
     function setSettings() {
-        serverURL = settingForm.setServerURL
+        if(settingForm.setServerURL.substring(0,7) !== "http://") {
+            if(settingForm.setServerURL.substring(0,8) !== "https://") {
+                serverURL = "http://"+settingForm.setServerURL.substring(8, settingForm.setServerURL.length-8)+":"+setingForm.setPortNumber
+            } else {
+                serverURL = "http://"+settingForm.setServerURL+":"+settingForm.setPortNumber
+            }
+        } else {
+            serverURL = settingForm.setServerURL+":"+settingForm.setPortNumber
+        }
+
         usrName = settingForm.setUserName
         passWord = settingForm.setPassword
         sendLogin()
@@ -171,9 +185,12 @@ ApplicationWindow {
     function updatePlaylist(m_item, typeOfItem, action) { // m_item needs to be the name of an artist, album, playlist or song
         console.log("Update Playlist", m_item, typeOfItem, action)
         if(action === "replace") {
-//            playList.clear()
-            playList.length = 0
+            playList = []
             currentPlayListJSONModel.clear()
+            MediaPlayer.playlist.clear()
+            playlistAddAt = 0
+        } else {
+            playlistAddAt = playList.length
         }
 
         if(typeOfItem === "artist") {
@@ -187,18 +204,33 @@ ApplicationWindow {
         }
     }
 
+    function loadToPlaylist() {
+        console.log("gettingArtists is:", gettingArtists, "gettingAlbums is:", gettingAlbums, "gettingTitles is:", gettingTitles)
+        if( gettingArtists <= 0 && gettingAlbums <= 0 && gettingTitles <= 0) {
+            console.log("loading playlist whch has length of:", playList.length)
+            isPlaying = true
+            nowPlaying.visible = true
+            nowPlaying.loadPlaylist(playList, playlistAddAt)
+//        } else {
+//            console.log("gettingArtists is:", gettingArtists, "gettingAlbums is:", gettingAlbums, "gettingTitles is:", gettingTitles)
+        }
+    }
+
     function playlistAddSong(songObj) {   // this actually adds the songs to our playlist
         currentPlayListJSONModel.add(songObj)
         playList.push(songObj)
-//        console.log("playlist count:", playList.length)
-//        console.log("filepath:", playList[playList.length-1].filepath)
+        gettingTitles--;
+        loadToPlaylist();
     }
 
     function playlistAddAlbum(title) {  // add songs from album
+        console.log("alubm get count:", gettingAlbums)
+        gettingAlbums++;
         serverCall("/db/album-songs", JSON.stringify({ 'album' : title }), "POST", playlistAddAlbumResp)
     }
 
     function playlistAddArtist(title) { // add albums from artist
+        gettingArtists++;
         serverCall("/db/artists-albums", JSON.stringify({ 'artist' : title }), "POST", playlistAddArtistResp)
     }
 
@@ -209,13 +241,12 @@ ApplicationWindow {
     function playlistAddAlbumResp(resp) {
         var albumResp = JSON.parse(resp.responseText)
         for( var i = 0; i < albumResp.length; i++ ) {
+            gettingTitles++;
             playlistAddSong(albumResp[i])
         }
-        if(!isPlaying) {
-            isPlaying = true
-            nowPlaying.visible = true
-            nowPlaying.loadPlaylist(playList)
-        }
+        gettingAlbums--;
+        console.log("exit getting albums with count:", gettingAlbums)
+        loadToPlaylist()
     }
 
     function playlistAddArtistResp(resp) {
@@ -224,6 +255,9 @@ ApplicationWindow {
         for( var i = 0; i < artistResp.albums.length; i++) {
             playlistAddAlbum(artistResp.albums[i].name)
         }
+        gettingArtists--;
+        console.log("exit getting artists")
+        loadToPlaylist()
     }
 
     header: ToolBar {

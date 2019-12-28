@@ -6,6 +6,7 @@ Item {
     property alias setServerURL: txtServerURL.text
     property alias setUserName: txtUserName.text
     property alias setPassword: txtPassword.text
+    property alias setPortNumber: txtPortNumber
 
     Label {
         id: label
@@ -18,12 +19,21 @@ Item {
         id: txtServerURL
         x: 123
         y: 25
-        width: 392
+        width: 258
         height: 40
-        text: qsTr("Text Field")
+        text: qsTr("")
     }
 
 
+
+    TextField {
+        id: txtPortNumber
+        x: 432
+        y: 26
+        width: 109
+        height: 40
+        text: qsTr("3000")
+    }
 
     Switch {
         id: checkLogin
@@ -157,6 +167,14 @@ Item {
         text: qsTr("Cancel")
         onClicked: drawer.close()
     }
+
+    Label {
+        id: label3
+        x: 399
+        y: 37
+        text: qsTr("Port:")
+    }
+
 
 
 }

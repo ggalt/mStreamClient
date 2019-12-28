@@ -14,5 +14,7 @@
         <file>SongForm.qml</file>
         <file>PlaylistForm.qml</file>
         <file>ScrollingTextWindow.qml</file>
+        <file>ColorProgressBar.qml</file>
+        <file>PlayingListForm.qml</file>
     </qresource>
 </RCC>

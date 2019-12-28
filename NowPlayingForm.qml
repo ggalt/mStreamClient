@@ -8,10 +8,10 @@ Item {
     width: 400
     height: 400
 
-    function loadPlaylist(currentPlaylist) {
-        for( var i = 0; i < currentPlaylist.length; i++ ) {
+    function loadPlaylist(currentPlaylist,  startingAt) {
+        for( var i = startingAt; i < currentPlaylist.length; i++ ) {
             mediaPlayList.addItem(mainWindow.serverURL+"/media/"+currentPlaylist[i].filepath+"?token="+mainWindow.myToken)
-            console.log("add item:", mainWindow.serverURL+"/media/"+currentPlaylist[i].filepath+"?token="+mainWindow.myToken)
+//            console.log("add item:", mainWindow.serverURL+"/media/"+currentPlaylist[i].filepath+"?token="+mainWindow.myToken)
         }
     }
 
@@ -23,6 +23,9 @@ Item {
         }
         onPlaybackStateChanged: {
             console.log("onPlaybackStateChanged", playbackState)
+            if( playbackState === 0 ) {
+                console.log("playlist has:", mediaPlayList.itemCount)
+            }
         }
 
         onPlaylistChanged: {
@@ -38,11 +41,14 @@ Item {
             if(mediaPlayList.currentIndex < mainWindow.playList.length && mediaPlayList.currentIndex >= 0) {
                 console.log("current index and length of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
                 mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
+                coverImage.source=mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
+
+
             } else {
                 console.log("current index passed end of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
             }
 
-            console.log(mediaPlayList.currentIndex)
+            console.log("playlist current index:", mediaPlayList.currentIndex)
         }
 
         function getStatus() {
@@ -198,16 +204,18 @@ Item {
             fillMode: Image.PreserveAspectFit
         }
 
-        ProgressBar {
+        ColorProgressBar {
             id: progressBar
             y: 294
             height: 14
-            layer.mipmap: false
             anchors.right: parent.right
             anchors.rightMargin: 5
             anchors.left: parent.left
             anchors.leftMargin: 5
-            value: mediaPlayer.position /mediaPlayer.duration
+            currentValue: mediaPlayer.position /mediaPlayer.duration
+            progressColor: "green"
+            progressOpacity: .80
+            backgroundColor: "white"
         }
     }
 
@@ -218,8 +226,8 @@ Item {
 /*##^##
 Designer {
     D{i:2;anchors_height:200;anchors_width:200;anchors_x:43;anchors_y:48}D{i:1;anchors_width:200;anchors_x:31}
-D{i:3;anchors_height:100;anchors_width:100;anchors_x:46;anchors_y:12}D{i:10;anchors_width:359;anchors_x:6}
-D{i:8;anchors_height:100;anchors_width:100;anchors_x:46;anchors_y:12}
+D{i:3;anchors_height:100;anchors_width:100;anchors_x:46;anchors_y:12}D{i:8;anchors_height:100;anchors_width:100;anchors_x:46;anchors_y:12}
+D{i:10;anchors_width:359;anchors_x:6}
 }
 ##^##*/
 

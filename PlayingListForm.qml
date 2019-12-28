@@ -7,10 +7,13 @@ Item {
 
     ListView {
         anchors.fill: parent
-        model: albumListJSONModel.model
+        model: currentPlayListJSONModel.model
+        highlightFollowsCurrentItem: true
+
+        highlight: "yellow"
 
         delegate: Item {
-            id: albumDelegate
+            id: songTitleDelegate
             height: 87
             width: parent.width
 
@@ -33,7 +36,7 @@ Item {
             }
 
             Rectangle {
-                id: albumDelegateRect
+                id: songTitleDelegateRect
                 color: "white"
                 anchors.fill: parent
                 anchors.margins: 1
@@ -60,7 +63,6 @@ Item {
             }
 
         }
-
     }
 
 }
