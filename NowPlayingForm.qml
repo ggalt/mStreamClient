@@ -10,21 +10,115 @@ Item {
 
     function loadPlaylist(currentPlaylist,  startingAt) {
         for( var i = startingAt; i < currentPlaylist.length; i++ ) {
-            mediaPlayList.addItem(mainWindow.serverURL+"/media/"+currentPlaylist[i].filepath+"?token="+mainWindow.myToken)
-//            console.log("add item:", mainWindow.serverURL+"/media/"+currentPlaylist[i].filepath+"?token="+mainWindow.myToken)
+            mediaPlayList.addItem(mainWindow.serverURL+"/media/"+mainWindow.fullyEncodeURI(currentPlaylist[i].filepath)+"?token="+mainWindow.myToken)
+            console.log("add item:", mainWindow.serverURL+"/media/"+mainWindow.fullyEncodeURI(currentPlaylist[i].filepath)+"?token="+mainWindow.myToken)
+        }
+    }
+
+    function clearPlaylist() {
+        mediaPlayList.clear()
+    }
+
+    Frame {
+        id: imageFrame
+        x: 0
+        y: 320
+        anchors.bottom: controlFrame.top
+        anchors.bottomMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.top: parent.top
+        anchors.topMargin: 0
+
+        Image {
+            id: coverImage
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 20
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            anchors.right: volSlider.left
+            anchors.rightMargin: 5
+
+            //            source:  mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
+            fillMode: Image.PreserveAspectFit
+        }
+
+        ColorProgressBar {
+            id: progressBar
+            backgroundOpacity: 1
+//            progressColor: "#0da3fa"
+            progressGradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#286efe"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#000000"
+                }
+            }
+            backgroundRadius: height/2
+            progressRadius: height/2
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 2
+            anchors.top: coverImage.bottom
+            anchors.topMargin: 2
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            currentValue: mediaPlayer.position /mediaPlayer.duration
+            progressOpacity: 0.6
+            backgroundColor: "white"
+        }
+
+        Slider {
+            id: volSlider
+            anchors.bottom: progressBar.top
+            anchors.bottomMargin: 0
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            orientation: Qt.Vertical
+            value: mediaPlayer.volume
+            onValueChanged: mediaPlayer.volume = value
+
         }
     }
 
     MediaPlayer {
         id: mediaPlayer
         audioRole: MediaPlayer.MusicRole
+
+        autoPlay: true
+
         playlist: Playlist {
             id: mediaPlayList
+
         }
         onPlaybackStateChanged: {
             console.log("onPlaybackStateChanged", playbackState)
-            if( playbackState === 0 ) {
+            if( playbackState === MediaPlayer.PlayingState ) {
                 console.log("playlist has:", mediaPlayList.itemCount)
+                if(mediaPlayList.currentIndex < mainWindow.playList.length && mediaPlayList.currentIndex >= 0) {
+                    console.log("current index and length of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
+                    mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
+                    coverImage.source=mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
+
+
+                } else {
+                    console.log("current index passed end of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
+                }
+            } else if( playbackState === MediaPlayer.PausedState ) {
+                console.log("Paused State")
+            } else if( playbackState === MediaPlayer.StoppedState ) {
+                console.log("Stopped State")
             }
         }
 
@@ -37,47 +131,48 @@ Item {
         }
 
         onStatusChanged: {
-            console.log("onStatusChanged", getStatus(), "error state:", errorString)
-            if(mediaPlayList.currentIndex < mainWindow.playList.length && mediaPlayList.currentIndex >= 0) {
-                console.log("current index and length of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
-                mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
-                coverImage.source=mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
+            if( status === MediaPlayer.Loading || status === MediaPlayer.Loaded ) {
+                if(mediaPlayList.currentIndex < mainWindow.playList.length && mediaPlayList.currentIndex >= 0) {
+                    console.log("current index and length of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
+                    mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
+                    coverImage.source=mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
+                    console.log("Cover image URL:", mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"])
 
 
-            } else {
-                console.log("current index passed end of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
+                } else {
+                    console.log("current index passed end of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
+                }
             }
 
-            console.log("playlist current index:", mediaPlayList.currentIndex)
+            console.log("onStatusChanged", getStatus(), "error state:", errorString)
+
         }
 
         function getStatus() {
             if(status === 0)
+                return "Status 0, No idea what this means"
+            else if(status === MediaPlayer.NoMedia)
                 return "NoMedia - no media has been set."
-            else if(status === 1)
-                return "NoMedia - no media has been set."
-            else if(status === 2)
+            else if(status === MediaPlayer.Loading)
                 return "Loading - the media is currently being loaded."
-            else if(status === 3)
+            else if(status === MediaPlayer.Loaded)
                 return "Loaded - the media has been loaded."
-            else if(status === 4)
+            else if(status === MediaPlayer.Buffering)
                 return "Buffering - the media is buffering data."
-            else if(status === 5)
+            else if(status === MediaPlayer.Stalled)
                 return "Stalled - playback has been interrupted while the media is buffering data."
-            else if(status === 6)
+            else if(status === MediaPlayer.Buffered)
                 return "Buffered - the media has buffered data."
-            else if(status === 7)
+            else if(status === MediaPlayer.EndOfMedia)
                 return "EndOfMedia - the media has played to the end."
-            else if(status === 8)
+            else if(status === MediaPlayer.InvalidMedia)
                 return "InvalidMedia - the media cannot be played."
-            else if(status === 9)
+            else if(status === MediaPlayer.UnknownStatus)
                 return "UnknownStatus - the status of the media is unknown."
             else
                 return "really unknown status!! HELP!!"
 
         }
-
-        //        source: mainWindow.serverURL+"/media/"+mainWindow.playList[mainWindow.currentTrack].filepath+"?token="+mainWindow.myToken
     }
 
     Frame {
@@ -91,143 +186,104 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
 
-        Button {
-            id: btnPlay
-            x: 80
+        ImageButton {
+            id: btnPausePlay
             y: 8
-            text: qsTr("Play")
+            width: 50
+            height: 50
+            anchors.left: btnReverse.right
+            anchors.leftMargin: 5
+            anchors.verticalCenter: parent.verticalCenter
+            buttonImage: mediaPlayer.playbackState === MediaPlayer.PlayingState ? "qrc:/pause.png" : "qrc:/play.png"
             onClicked: {
                 coverImage.source=mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
-                mediaPlayer.play()
+                if(mediaPlayer.playbackState === MediaPlayer.PlayingState )
+                    mediaPlayer.pause()
+                else
+                    mediaPlayer.play()
                 console.log("Song duration:", mediaPlayer.duration)
                 console.log("song position:", mediaPlayer.position)
                 console.log("volume set:", mediaPlayer.volume)
+
             }
         }
 
-        Button {
-            id: btnPause
-            x: 323
+        ImageButton {
+            id: btnReverse
             y: 8
-            width: 47
-            height: 40
-            text: qsTr("Pause")
-            onClicked: mediaPlayer.pause()
+            width: 50
+            height: 50
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            buttonImage: "reverse.png"
+            onClicked:  mediaPlayList.previous()
         }
 
-        Button {
-            id: btnPrevious
-            x: 0
+        ImageButton {
+            id: btnForward
             y: 8
-            width: 67
-            height: 40
-            text: qsTr("Previous")
-            onClicked:  {
-                mediaPlayList.previous()
-            }
+            width: 50
+            height: 50
+            anchors.left: btnPausePlay.right
+            anchors.leftMargin: 5
+            anchors.verticalCenter: parent.verticalCenter
+            buttonImage: "forward.png"
+            onClicked: mediaPlayList.next()
         }
 
-        Button {
-            id: btnNext
-            x: 202
+        ImageButton {
+            id: btnLoop
             y: 8
-            width: 65
-            height: 40
-            text: qsTr("Next")
+            width: 50
+            height: 50
+            checkable: true
+            anchors.left: btnForward.right
+            anchors.leftMargin: 50
+            anchors.verticalCenter: parent.verticalCenter
+            buttonImage: checked ? "loop.png" : "noloop.png"
             onClicked: {
-                mediaPlayList.next()
+                if(btnLoop.checked) {
+                    mediaPlayList.playbackMode = Playlist.Loop
+                } else {
+                    mediaPlayList.playbackMode = Playlist.CurrentItemOnce
+                }
             }
         }
 
-    }
+        ImageButton {
+            id: btnShuffle
+            y: 8
+            width: 50
+            height: 50
+            checkable: true
+            anchors.left: btnLoop.right
+            anchors.leftMargin: 5
+            anchors.verticalCenter: parent.verticalCenter
+            buttonImage: checked ? "shuffle.png" : "noshuffle.png"
+            onClicked: {
+                if( btnShuffle.checked ) {
+//                    mediaPlayList.playbackMode = Playlist.Random
+                    mediaPlayList.shuffle()
+                    console.log("Selected Shuffle.  Playback state is:", mediaPlayList.playbackMode, Playlist.Random)
+                } else {
+                    mediaPlayList.playbackMode = Playlist.Sequential
+                }
 
-    Rectangle {
-        id: rectangle
-        x: 324
-        y: 61
-        width: 68
-        height: 253
-        color: "#ffffff"
-
-        Tumbler {
-            id: volTumbler
-            property int volumeRange: 10
-            property int currentVolume: mediaPlayer.volume * volumeRange
-            anchors.fill: parent
-            font.bold: true
-            font.pointSize: 19
-            wrap: false
-            wheelEnabled: false
-            visibleItemCount: 5
-            model: volumeRange + 1
-
-            currentIndex: currentVolume
-            onCurrentIndexChanged: {
-                currentVolume = currentIndex / volumeRange
-                mediaPlayer.volume = currentIndex / volumeRange
             }
         }
+
+
     }
-
-    Label {
-        id: label
-        x: 345
-        y: 31
-        text: qsTr("Volume:")
-        anchors.horizontalCenter: rectangle.horizontalCenter
-        font.pointSize: 13
-    }
-
-    Frame {
-        id: imageFrame
-        anchors.bottom: controlFrame.top
-        anchors.bottomMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        anchors.top: parent.top
-        anchors.topMargin: 0
-
-        Image {
-            id: coverImage
-            anchors.right: volTumbler.left
-            anchors.rightMargin: 5
-            anchors.bottom: progressBar.top
-            anchors.bottomMargin: 5
-            anchors.left: parent.left
-            anchors.leftMargin: 5
-            anchors.top: parent.top
-            anchors.topMargin: 5
-
-            //            source:  mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
-            fillMode: Image.PreserveAspectFit
-        }
-
-        ColorProgressBar {
-            id: progressBar
-            y: 294
-            height: 14
-            anchors.right: parent.right
-            anchors.rightMargin: 5
-            anchors.left: parent.left
-            anchors.leftMargin: 5
-            currentValue: mediaPlayer.position /mediaPlayer.duration
-            progressColor: "green"
-            progressOpacity: .80
-            backgroundColor: "white"
-        }
-    }
-
-
 
 }
 
 /*##^##
 Designer {
-    D{i:2;anchors_height:200;anchors_width:200;anchors_x:43;anchors_y:48}D{i:1;anchors_width:200;anchors_x:31}
-D{i:3;anchors_height:100;anchors_width:100;anchors_x:46;anchors_y:12}D{i:8;anchors_height:100;anchors_width:100;anchors_x:46;anchors_y:12}
-D{i:10;anchors_width:359;anchors_x:6}
+    D{i:3;anchors_height:14;anchors_y:294}D{i:4;anchors_width:200;anchors_x:31}D{i:6;anchors_height:100;anchors_width:100;anchors_x:46;anchors_y:12}
+D{i:5;anchors_height:200;anchors_width:200;anchors_x:43;anchors_y:48}D{i:8;anchors_x:50}
+D{i:9;anchors_x:0}D{i:10;anchors_x:110}D{i:11;anchors_x:205}D{i:12;anchors_x:262}
+D{i:7;anchors_height:100;anchors_width:100;anchors_x:46;anchors_y:12}
 }
 ##^##*/
 

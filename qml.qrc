@@ -16,5 +16,14 @@
         <file>ScrollingTextWindow.qml</file>
         <file>ColorProgressBar.qml</file>
         <file>PlayingListForm.qml</file>
+        <file>forward.png</file>
+        <file>loop.png</file>
+        <file>pause.png</file>
+        <file>play.png</file>
+        <file>reverse.png</file>
+        <file>shuffle.png</file>
+        <file>ImageButton.qml</file>
+        <file>noloop.png</file>
+        <file>noshuffle.png</file>
     </qresource>
 </RCC>

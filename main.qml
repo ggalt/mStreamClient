@@ -57,6 +57,17 @@ ApplicationWindow {
     property int gettingAlbums: 0
     property int gettingTitles: 0
 
+    function fullyEncodeURI(uri) {
+        var retURI = encodeURIComponent(uri)
+        console.log("encoded URI:", retURI)
+        retURI = retURI.replace("@", "%40")
+        retURI = retURI.replace("!", "%21")
+        retURI = retURI.replace("*", "%2A")
+        retURI = retURI.replace("_", "%5F")
+        console.log("Fixed URI:", retURI)
+        return retURI
+    }
+
     function setSettings() {
         if(settingForm.setServerURL.substring(0,7) !== "http://") {
             if(settingForm.setServerURL.substring(0,8) !== "https://") {
@@ -187,7 +198,7 @@ ApplicationWindow {
         if(action === "replace") {
             playList = []
             currentPlayListJSONModel.clear()
-            MediaPlayer.playlist.clear()
+            nowPlaying.clearPlaylist()
             playlistAddAt = 0
         } else {
             playlistAddAt = playList.length
@@ -297,8 +308,8 @@ ApplicationWindow {
 
     Frame {
         id: navFrame
-        anchors.right: parent.right
-        anchors.rightMargin: parent.width / 2
+        anchors.rightMargin: 0
+        anchors.right: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
         anchors.left: parent.left
@@ -351,6 +362,7 @@ ApplicationWindow {
                     duration: 200
                 }
             }
+
         }
 
     }
@@ -369,6 +381,7 @@ ApplicationWindow {
         NowPlayingForm {
             id: nowPlaying
             visible: false
+            anchors.fill: parent
         }
     }
 
@@ -395,8 +408,8 @@ ApplicationWindow {
 
 /*##^##
 Designer {
-    D{i:4;anchors_x:592;anchors_y:104}D{i:3;anchors_x:43}D{i:1;anchors_height:200;anchors_width:200;anchors_x:23;anchors_y:140}
-D{i:2;anchors_height:200;anchors_width:200;anchors_x:70;anchors_y:17}D{i:10;anchors_height:433;anchors_y:47}
-D{i:19;anchors_height:433;anchors_y:47}
+    D{i:1;anchors_height:200;anchors_width:200;anchors_x:23;anchors_y:140}D{i:2;anchors_height:200;anchors_width:200;anchors_x:70;anchors_y:17}
+D{i:3;anchors_x:43}D{i:4;anchors_x:592;anchors_y:104}D{i:10;anchors_height:433;anchors_y:47}
+D{i:19;anchors_height:433;anchors_y:47}D{i:21;anchors_height:200;anchors_width:200}
 }
 ##^##*/
