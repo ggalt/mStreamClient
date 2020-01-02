@@ -67,6 +67,10 @@ Item {
         }
     }
 
+    function move(from, to) {
+        jsonModel.move(from, to, 1)
+    }
+
     function get(index) {
         return jsonModel.get(index)
     }
