@@ -2,6 +2,7 @@ import QtQuick 2.13
 import QtQuick.Controls 2.13
 import QtQml 2.12
 import QtMultimedia 5.12
+import SortFilterProxyModel 0.2
 
 Item {
     id: element

@@ -211,7 +211,7 @@ ApplicationWindow {
         } else if( typeOfItem === "playlist") {
             playlistAddPlaylist(m_item)
         } else {
-            playlistAddSong(item)
+            playlistAddSong(m_item)
         }
     }
 

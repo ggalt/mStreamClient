@@ -55,7 +55,36 @@ Rectangle {
             name: "Scrolling"
         },
         State {
-            name: "Fading"
+            name: "FadeOut"
+        },
+        State {
+            name: "FadeIn"
+        }
+
+    ]
+
+    transitions: [
+        Transition {
+            from: "*"
+            to: "Static"
+
+//            NumberAnimation {
+//                target: lblLetter
+//                property: "opacity"
+//                duration: 200
+//                easing.type: Easing.InOutQuad
+//            }
+        },
+        Transition {
+            from: "*"
+            to: "Scrolling"
+
+//            NumberAnimation {
+//                target: lblLetter
+//                property: "opacity"
+//                duration: 200
+//                easing.type: Easing.InOutQuad
+//            }
         }
     ]
 
