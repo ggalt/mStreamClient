@@ -100,8 +100,8 @@ Item {
 
             Label {
                 id: lblLetter
-                x: 277
-                y: 209
+//                x: 277
+//                y: 209
                 width: 200
                 height: 200
                 text: listView.currentItem.myData.name[0]

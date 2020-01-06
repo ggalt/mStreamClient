@@ -11,9 +11,15 @@ Rectangle {
     property alias scrollText: scrollingText.text
     property alias scrollFont: scrollingText.font
     property alias scrollTextColor: scrollingText.color
+    property alias scrollTextOpacity: scrollingText.opacity
+
+    state: "Static"
 
     function animateText() {
-
+        scrollingText.left -= scrollStep
+        if(scrollingText.left + textMetrics.width <= scrollingTextWindow.right) {
+            scrollingTextWindow.state = "FadeOut"
+        }
     }
 
     function setupScrolling() {
@@ -21,6 +27,10 @@ Rectangle {
             scrollStep = (((textMetrics.width - scrollingTextWindow.width) + scrollingTextWindow.width/3) * scrollTimer.interval) / scrollSpeed
             scrollTimer.start()
         }
+    }
+
+    Component.onCompleted: {
+        staticDisplayTimer.start()
     }
 
 
@@ -32,11 +42,21 @@ Rectangle {
         }
     }
 
+    Timer {
+        id: staticDisplayTimer
+        interval: scrollInterval
+        onTriggered: {
+            staticDisplayTimer.stop()
+            scrollingTextWindow.state = "Scrolling"
+            scrollTimer.start()
+        }
+    }
+
     Text {
         id: scrollingText
-        x:0
-        text: qsTr("Text")
         anchors.fill: parent
+
+        text: qsTr("Text")
         font.pixelSize: 12
         onTextChanged: setupScrolling()
     }
@@ -56,9 +76,17 @@ Rectangle {
         },
         State {
             name: "FadeOut"
+            PropertyChanges {
+                target: scrollingText
+                opacity: 0
+            }
         },
         State {
             name: "FadeIn"
+            PropertyChanges {
+                target: scrollingText
+                opacity: 100
+            }
         }
 
     ]
@@ -66,25 +94,38 @@ Rectangle {
     transitions: [
         Transition {
             from: "*"
-            to: "Static"
+            to: "FadeOut"
 
-//            NumberAnimation {
-//                target: lblLetter
-//                property: "opacity"
-//                duration: 200
-//                easing.type: Easing.InOutQuad
-//            }
+            NumberAnimation {
+                target: scrollingText
+                property: "opacity"
+                duration: 500
+                easing.type: Easing.InOutQuad
+            }
+            onRunningChanged: {
+                if(!running && scrollingTextWindow.state==="FadeOut"){
+                    scrollTimer.stop()
+                    scrollingTextWindow.state="FadeIn"
+                    scrollingText.left = 0
+                }
+            }
         },
         Transition {
             from: "*"
-            to: "Scrolling"
+            to: "FadeIn"
 
-//            NumberAnimation {
-//                target: lblLetter
-//                property: "opacity"
-//                duration: 200
-//                easing.type: Easing.InOutQuad
-//            }
+            NumberAnimation {
+                target: scrollingText
+                property: "opacity"
+                duration: 100
+                easing.type: Easing.InOutQuad
+            }
+            onRunningChanged: {
+                if(!running && scrollingTextWindow.state==="FadeIn"){
+                    staticDisplayTimer.start()
+                    scrollingTextWindow.state="Static"
+                }
+            }
         }
     ]
 

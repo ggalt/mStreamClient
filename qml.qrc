@@ -25,5 +25,6 @@
         <file>ImageButton.qml</file>
         <file>noloop.png</file>
         <file>noshuffle.png</file>
+        <file>ScrollingListView.qml</file>
     </qresource>
 </RCC>
