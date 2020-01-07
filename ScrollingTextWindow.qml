@@ -4,39 +4,50 @@ Rectangle {
     id: scrollingTextWindow
     clip: true
 
-    property int scrollSpeed: 4000  // 4 seconds of scrolling
-    property int scrollInterval: 3000   // 3 seconds of static text
-    property real scrollStep: 0
+    property int scrollSpeed: 6000  // 6 seconds of scrolling
+    property int scrollInterval: 8000   // 5 seconds of static text
+    property int fadeOutSpeed: 1000
+    property int fadeInSpeed: 200
+    property int scrollStep: 0
+    property int windowCoverage: 80 // percentage of window filled before we implement a scroll
+    property int fadePoint: 50      // percentage of window covered by end of text before fade starts
+
 
     property alias scrollText: scrollingText.text
     property alias scrollFont: scrollingText.font
+    property alias scrollFontPointSize: scrollingText.font.pointSize
     property alias scrollTextColor: scrollingText.color
     property alias scrollTextOpacity: scrollingText.opacity
 
     state: "Static"
 
     function animateText() {
-        scrollingText.left -= scrollStep
-        if(scrollingText.left + textMetrics.width <= scrollingTextWindow.right) {
+        scrollingText.x = scrollingText.x-scrollStep
+
+        if(scrollingText.x + textMetrics.width <= ((100 - fadePoint) * scrollingTextWindow.width)/100 ) {
             scrollingTextWindow.state = "FadeOut"
         }
     }
 
-    function setupScrolling() {
-        if (textMetrics.width > scrollingTextWindow.width) {
-            scrollStep = (((textMetrics.width - scrollingTextWindow.width) + scrollingTextWindow.width/3) * scrollTimer.interval) / scrollSpeed
-            scrollTimer.start()
-        }
-    }
+    function setupScrolling() {     // reset everything
+        staticDisplayTimer.stop()
+        scrollTimer.stop()
+        scrollingText.horizontalAlignment=Text.AlignHCenter
+        scrollingText.x = 0
+        state="Static"
 
-    Component.onCompleted: {
-        staticDisplayTimer.start()
+        if (textMetrics.width > windowCoverage * scrollingTextWindow.width / 100) {
+            scrollStep = (((textMetrics.width - scrollingTextWindow.width) + scrollingTextWindow.width/3) * scrollTimer.interval) / scrollSpeed
+            scrollingText.horizontalAlignment=Text.AlignLeft
+            staticDisplayTimer.start()
+        }
     }
 
 
     Timer {
         id: scrollTimer
         interval: 33    // ~30 fps
+        repeat: true
         onTriggered: {
             animateText()
         }
@@ -52,27 +63,49 @@ Rectangle {
         }
     }
 
-    Text {
-        id: scrollingText
-        anchors.fill: parent
-
-        text: qsTr("Text")
-        font.pixelSize: 12
-        onTextChanged: setupScrolling()
+    Rectangle {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.top: parent.top
+        anchors.leftMargin: 10
+        clip: true
+        Text {
+            id: scrollingText
+            x: 0
+            y: 0
+            height: parent.height
+            width: parent.width
+            onTextChanged: setupScrolling()
+            text: "test text"
+            horizontalAlignment: Text.AlignHCenter
+            font.pointSize: 20
+            opacity: 1.0
+        }
     }
+
 
     TextMetrics {
         id: textMetrics
         text: scrollingText.text
+        font: scrollingText.font
     }
 
     states: [
         State {
             name: "Static"
+            PropertyChanges {
+                target: scrollingText
+                opacity: 1.0
+            }
         },
 
         State {
             name: "Scrolling"
+            PropertyChanges {
+                target: scrollingText
+                opacity: 1.0
+            }
         },
         State {
             name: "FadeOut"
@@ -85,7 +118,7 @@ Rectangle {
             name: "FadeIn"
             PropertyChanges {
                 target: scrollingText
-                opacity: 100
+                opacity: 1.0
             }
         }
 
@@ -99,14 +132,14 @@ Rectangle {
             NumberAnimation {
                 target: scrollingText
                 property: "opacity"
-                duration: 500
+                duration: fadeOutSpeed
                 easing.type: Easing.InOutQuad
             }
             onRunningChanged: {
                 if(!running && scrollingTextWindow.state==="FadeOut"){
                     scrollTimer.stop()
                     scrollingTextWindow.state="FadeIn"
-                    scrollingText.left = 0
+                    scrollingText.x = 0
                 }
             }
         },
@@ -117,7 +150,7 @@ Rectangle {
             NumberAnimation {
                 target: scrollingText
                 property: "opacity"
-                duration: 100
+                duration: fadeInSpeed
                 easing.type: Easing.InOutQuad
             }
             onRunningChanged: {

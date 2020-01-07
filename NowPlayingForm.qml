@@ -12,7 +12,6 @@ Item {
     function loadPlaylist(currentPlaylist,  startingAt) {
         for( var i = startingAt; i < currentPlaylist.length; i++ ) {
             mediaPlayList.addItem(mainWindow.serverURL+"/media/"+mainWindow.fullyEncodeURI(currentPlaylist[i].filepath)+"?token="+mainWindow.myToken)
-            console.log("add item:", mainWindow.serverURL+"/media/"+mainWindow.fullyEncodeURI(currentPlaylist[i].filepath)+"?token="+mainWindow.myToken)
         }
     }
 
@@ -109,7 +108,7 @@ Item {
                 console.log("playlist has:", mediaPlayList.itemCount)
                 if(mediaPlayList.currentIndex < mainWindow.playList.length && mediaPlayList.currentIndex >= 0) {
                     console.log("current index and length of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
-                    mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
+                    mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Album:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["album"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
                     coverImage.source=mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
 
 
@@ -135,7 +134,8 @@ Item {
             if( status === MediaPlayer.Loading || status === MediaPlayer.Loaded ) {
                 if(mediaPlayList.currentIndex < mainWindow.playList.length && mediaPlayList.currentIndex >= 0) {
                     console.log("current index and length of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
-                    mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
+                    mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Album:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["album"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
+//                    mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
                     coverImage.source=mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
                     console.log("Cover image URL:", mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"])
 

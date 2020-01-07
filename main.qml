@@ -44,7 +44,8 @@ ApplicationWindow {
     property int currentTrack: 0
     property bool isPlaying: false
     property int playlistAddAt: 0
-    property alias toolBarText: toolBarLabel.text
+    property alias toolBarText: toolBarLabel.scrollText
+//    property alias toolBarText: toolBarLabel.text
 
     property string usrName: appSettings.settingUserName
     property string passWord: appSettings.settingPassWord
@@ -59,12 +60,10 @@ ApplicationWindow {
 
     function fullyEncodeURI(uri) {
         var retURI = encodeURIComponent(uri)
-        console.log("encoded URI:", retURI)
         retURI = retURI.replace("@", "%40")
         retURI = retURI.replace("!", "%21")
         retURI = retURI.replace("*", "%2A")
         retURI = retURI.replace("_", "%5F")
-        console.log("Fixed URI:", retURI)
         return retURI
     }
 
@@ -288,12 +287,23 @@ ApplicationWindow {
             }
         }
 
-        Label {
+        ScrollingTextWindow {
             id: toolBarLabel
-            text: isPlaying ? "Artist:"+playList[currentTrack].metadata["artist"]+" - Title:"+ playList[currentTrack].metadata["title"] : "mStream Client"
-            anchors.centerIn: parent
-            font.pointSize: 20
+            anchors.left: toolButton.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            scrollFontPointSize: 20
+            scrollText: isPlaying ? "Artist:"+playList[currentTrack].metadata["artist"]+" - Title:"+ playList[currentTrack].metadata["title"] : "mStream Client"
         }
+
+//        Label {
+//            id: toolBarLabel
+//            text: isPlaying ? "Artist:"+playList[currentTrack].metadata["artist"]+" - Title:"+ playList[currentTrack].metadata["title"] : "mStream Client"
+//            anchors.centerIn: parent
+//            font.pointSize: 20
+//        }
+
     }
 
     Drawer {
@@ -384,6 +394,7 @@ ApplicationWindow {
             anchors.fill: parent
         }
     }
+
 
 //    property string settingUserName: ""
 //    property string settingPassWord: ""
