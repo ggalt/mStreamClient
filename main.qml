@@ -68,18 +68,19 @@ ApplicationWindow {
     }
 
     function setSettings() {
-        if(settingForm.setServerURL.substring(0,7) !== "http://") {
-            if(settingForm.setServerURL.substring(0,8) !== "https://") {
-                serverURL = "http://"+settingForm.setServerURL.substring(8, settingForm.setServerURL.length-8)+":"+setingForm.setPortNumber
+        console.log(settingsForm.setServerURL, settingsForm.setPortNumber, settingsForm.setUserName, settingsForm.setPassword )
+        if(settingsForm.setServerURL.substring(0,7) !== "http://") {
+            if(settingsForm.setServerURL.substring(0,8) !== "https://") {
+                serverURL = "http://"+settingsForm.setServerURL.substring(8, settingsForm.setServerURL.length-8)+":"+settingsForm.setPortNumber
             } else {
-                serverURL = "http://"+settingForm.setServerURL+":"+settingForm.setPortNumber
+                serverURL = "http://"+settingsForm.setServerURL+":"+settingsForm.setPortNumber
             }
         } else {
-            serverURL = settingForm.setServerURL+":"+settingForm.setPortNumber
+            serverURL = settingsForm.setServerURL+":"+settingsForm.setPortNumber
         }
 
-        usrName = settingForm.setUserName
-        passWord = settingForm.setPassword
+        usrName = settingsForm.setUserName
+        passWord = settingsForm.setPassword
         sendLogin()
     }
 
@@ -199,8 +200,6 @@ ApplicationWindow {
             currentPlayListJSONModel.clear()
             nowPlaying.clearPlaylist()
             playlistAddAt = 0
-        } else {
-            playlistAddAt = playList.length
         }
 
         if(typeOfItem === "artist") {
@@ -221,12 +220,15 @@ ApplicationWindow {
             isPlaying = true
             nowPlaying.visible = true
             nowPlaying.loadPlaylist(playList, playlistAddAt)
+            stackView.push("qrc:/PlayingListForm.qml")
 //        } else {
 //            console.log("gettingArtists is:", gettingArtists, "gettingAlbums is:", gettingAlbums, "gettingTitles is:", gettingTitles)
         }
     }
 
     function playlistAddSong(songObj) {   // this actually adds the songs to our playlist
+        songObj.playListPosition = playlistAddAt++
+        console.log(JSON.stringify(songObj))
         currentPlayListJSONModel.add(songObj)
         playList.push(songObj)
         gettingTitles--;
@@ -249,7 +251,8 @@ ApplicationWindow {
     }
 
     function playlistAddAlbumResp(resp) {
-        var albumResp = JSON.parse(resp.responseText)
+//        var albumResp = JSON.parse(resp.responseText.replace(/album-art/g,"album_art")) // for some reason, our delegate doesn't like 'album-art'
+        var albumResp = JSON.parse(resp.responseText) // for some reason, our delegate doesn't like 'album-art'
         for( var i = 0; i < albumResp.length; i++ ) {
             gettingTitles++;
             playlistAddSong(albumResp[i])
@@ -297,12 +300,6 @@ ApplicationWindow {
             scrollText: isPlaying ? "Artist:"+playList[currentTrack].metadata["artist"]+" - Title:"+ playList[currentTrack].metadata["title"] : "mStream Client"
         }
 
-//        Label {
-//            id: toolBarLabel
-//            text: isPlaying ? "Artist:"+playList[currentTrack].metadata["artist"]+" - Title:"+ playList[currentTrack].metadata["title"] : "mStream Client"
-//            anchors.centerIn: parent
-//            font.pointSize: 20
-//        }
 
     }
 
@@ -311,7 +308,7 @@ ApplicationWindow {
         width: mainWindow.width * 0.66
         height: mainWindow.height
         SettingsForm {
-            id: settingForm
+            id: settingsForm
         }
 
     }

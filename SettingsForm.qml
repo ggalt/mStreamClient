@@ -6,7 +6,7 @@ Item {
     property alias setServerURL: txtServerURL.text
     property alias setUserName: txtUserName.text
     property alias setPassword: txtPassword.text
-    property alias setPortNumber: txtPortNumber
+    property alias setPortNumber: txtPortNumber.text
 
     Label {
         id: label
@@ -21,10 +21,8 @@ Item {
         y: 25
         width: 258
         height: 40
-        text: qsTr("")
+        text: qsTr("http://")
     }
-
-
 
     TextField {
         id: txtPortNumber
@@ -32,7 +30,7 @@ Item {
         y: 26
         width: 109
         height: 40
-        text: qsTr("3000")
+        text: "3000"
     }
 
     Switch {
@@ -153,6 +151,7 @@ Item {
         y: 420
         text: qsTr("OK")
         onClicked:  {
+            console.log(setServerURL, setUserName, setPassword, setPortNumber)
             mainWindow.setSettings()
             drawer.close()
         }

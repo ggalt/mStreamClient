@@ -10,6 +10,7 @@ Item {
     property alias myModel: listView.model
     property alias myDelegate: listView.delegate
     property alias highlightLetter: lblLetter.text
+    property alias myCurrentItem: listView.currentItem
 
     ScrollView {
         anchors.fill: parent
@@ -38,7 +39,7 @@ Item {
                 width: 2*scrollingListView.width/3
                 height: 2*scrollingListView.height/3
                 opacity: 0.5
-                font.pointSize: 150
+                font.pointSize: 200
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.horizontalCenter: parent.horizontalCenter
