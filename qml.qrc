@@ -26,5 +26,6 @@
         <file>noloop.png</file>
         <file>noshuffle.png</file>
         <file>ScrollingListView.qml</file>
+        <file>MusicPlaylist.qml</file>
     </qresource>
 </RCC>

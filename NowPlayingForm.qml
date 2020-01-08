@@ -10,8 +10,13 @@ Item {
     height: 400
 
     function loadPlaylist(currentPlaylist,  startingAt) {
+        console.log("loading playlist:", currentPlaylist, startingAt, currentPlaylist.length)
         for( var i = startingAt; i < currentPlaylist.length; i++ ) {
-            mediaPlayList.addItem(mainWindow.serverURL+"/media/"+mainWindow.fullyEncodeURI(currentPlaylist[i].filepath)+"?token="+mainWindow.myToken)
+//            mediaPlayList.addItem(mainWindow.serverURL+"/media/"+mainWindow.fullyEncodeURI(currentPlaylist[i].filepath)+"?token="+mainWindow.myToken)
+//            console.log(mainWindow.serverURL+"/media/"+mainWindow.fullyEncodeURI(currentPlaylist[i].filepath)+"?token="+mainWindow.myToken)
+            console.log("current position and len:",i, currentPlaylist.length)
+            mediaPlayList.addItem(mainWindow.serverURL+"/media/"+currentPlaylist[i].filepath+"?token="+mainWindow.myToken)
+            console.log("path to song:", mainWindow.serverURL+"/media/"+currentPlaylist[i].filepath+"?token="+mainWindow.myToken)
         }
     }
 
@@ -230,7 +235,11 @@ Item {
             anchors.leftMargin: 5
             anchors.verticalCenter: parent.verticalCenter
             buttonImage: "forward.png"
-            onClicked: mediaPlayList.next()
+            onClicked: {
+                console.log("next pressed")
+                console.log("playlist current index:", mediaPlayList.currentIndex, "Playlist length:", mediaPlayList.itemCount)
+                mediaPlayList.next()
+            }
         }
 
         ImageButton {

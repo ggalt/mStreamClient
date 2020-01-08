@@ -163,14 +163,14 @@ ApplicationWindow {
     }
 
     function artistsRequestResp(xmlhttp) {
-        console.log(xmlhttp.responseText)
+//        console.log(xmlhttp.responseText)
         artistListJSONModel.json = xmlhttp.responseText
         artistListJSONModel.query = "$.artists[*]"
         stackView.push( "qrc:/ArtistForm.qml" )
     }
 
     function albumRequestResp(xmlhttp) {
-        console.log(xmlhttp.responseText.substring(1,5000))
+//        console.log(xmlhttp.responseText.substring(1,5000))
         albumListJSONModel.json = xmlhttp.responseText
         albumListJSONModel.query = "$.albums[*]"
         stackView.push("qrc:/AlbumForm.qml")
@@ -219,7 +219,7 @@ ApplicationWindow {
             console.log("loading playlist whch has length of:", playList.length)
             isPlaying = true
             nowPlaying.visible = true
-            nowPlaying.loadPlaylist(playList, playlistAddAt)
+            nowPlaying.loadPlaylist(playList, playlistAddAt - playList.length)  // we've been incrementing the "playlistAddAt" variable, so remove the len of the list
             stackView.push("qrc:/PlayingListForm.qml")
 //        } else {
 //            console.log("gettingArtists is:", gettingArtists, "gettingAlbums is:", gettingAlbums, "gettingTitles is:", gettingTitles)
@@ -227,8 +227,8 @@ ApplicationWindow {
     }
 
     function playlistAddSong(songObj) {   // this actually adds the songs to our playlist
-        songObj.playListPosition = playlistAddAt++
-        console.log(JSON.stringify(songObj))
+        songObj.playListPosition = playlistAddAt++      // add the playListPosition role
+//        console.log(JSON.stringify(songObj))
         currentPlayListJSONModel.add(songObj)
         playList.push(songObj)
         gettingTitles--;
@@ -236,7 +236,7 @@ ApplicationWindow {
     }
 
     function playlistAddAlbum(title) {  // add songs from album
-        console.log("alubm get count:", gettingAlbums)
+        console.log("album get count:", gettingAlbums)
         gettingAlbums++;
         serverCall("/db/album-songs", JSON.stringify({ 'album' : title }), "POST", playlistAddAlbumResp)
     }
@@ -251,7 +251,6 @@ ApplicationWindow {
     }
 
     function playlistAddAlbumResp(resp) {
-//        var albumResp = JSON.parse(resp.responseText.replace(/album-art/g,"album_art")) // for some reason, our delegate doesn't like 'album-art'
         var albumResp = JSON.parse(resp.responseText) // for some reason, our delegate doesn't like 'album-art'
         for( var i = 0; i < albumResp.length; i++ ) {
             gettingTitles++;

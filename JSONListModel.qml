@@ -74,4 +74,7 @@ Item {
     function get(index) {
         return jsonModel.get(index)
     }
+
+    function setProperty(index, prop, val) {
+        jsonModel.setProperty(index, prop, val)    }
 }
