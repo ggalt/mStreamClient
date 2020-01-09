@@ -1,25 +1,25 @@
 import QtQuick 2.13
 import SortFilterProxyModel 0.2
 
-SortFilterProxyModel {
-    id: sortedModel
+JSONListModel {
+    id: sorterModel
 
     property int currentIndex: 0
-    property alias titleCount: origPlayList.count
+    property alias titleCount: sorterModel.count
     property var shuffleArray: []
     property bool looping: false
     property bool shuffle: false
 
-    sourceModel: origPlayList.model
+    SortFilterProxyModel {
+        id: sortedModel
 
-    JSONListModel {
-        id: origPlayList
-    }
+        sourceModel: sorterModel.model
 
-    RoleSorter {
-        id: shuffleSort
-        roleName: "playListPosition"
-        sortOrder: Qt.AscendingOrder
+        sorters: RoleSorter {
+            id: shuffleSort
+            roleName: "playListPosition"
+            sortOrder: Qt.AscendingOrder
+        }
     }
 
     function loop(status) {
@@ -42,19 +42,18 @@ SortFilterProxyModel {
         }
 
         for( var c = currentIndex; c < titleCount; c++ ) {
-            origPlayList.setProperty(c, "playListPosition", shuffleArray[c])
+            console.log(shuffleArray[c])
+            setProperty(c, "playListPosition", shuffleArray[c])
         }
     }
 
-    function ShuffleOn() {
+    function shuffleOn() {
         knuthShuffle()
         shuffle = true
-        sorters=shuffleSort
     }
 
-    function ShuffleOff() {
+    function shuffleOff() {
         shuffle = false
-        sorters=null
     }
 
     function next() {

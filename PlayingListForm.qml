@@ -4,7 +4,7 @@ ScrollingListView {
     id: playlistForm
 
     formName: "Playlist"
-    myModel: currentPlayListJSONModel.model
+    myModel: currentPlayList.model
 //    highlightLetter: myCurrentItem.myData.metadata.title[0]
 
 //    function knuthShuffle(arr) {

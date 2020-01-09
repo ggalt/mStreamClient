@@ -39,6 +39,10 @@ ApplicationWindow {
         id: currentPlayListJSONModel
     }
 
+    MusicPlaylist {
+        id: currentPlayList
+    }
+
     property var playList: []
     property var nowPlaying: []
     property int currentTrack: 0
@@ -46,6 +50,7 @@ ApplicationWindow {
     property int playlistAddAt: 0
     property alias toolBarText: toolBarLabel.scrollText
 //    property alias toolBarText: toolBarLabel.text
+    property alias curPlayLst: currentPlayList
 
     property string usrName: appSettings.settingUserName
     property string passWord: appSettings.settingPassWord
@@ -198,6 +203,7 @@ ApplicationWindow {
         if(action === "replace") {
             playList = []
             currentPlayListJSONModel.clear()
+            currentPlayList.clear()
             nowPlaying.clearPlaylist()
             playlistAddAt = 0
         }
@@ -230,6 +236,7 @@ ApplicationWindow {
         songObj.playListPosition = playlistAddAt++      // add the playListPosition role
 //        console.log(JSON.stringify(songObj))
         currentPlayListJSONModel.add(songObj)
+        currentPlayList.add(songObj)
         playList.push(songObj)
         gettingTitles--;
         loadToPlaylist();

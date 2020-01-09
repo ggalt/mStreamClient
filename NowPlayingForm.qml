@@ -274,6 +274,7 @@ Item {
             onClicked: {
                 if( btnShuffle.checked ) {
 //                    mediaPlayList.playbackMode = Playlist.Random
+                    mainWindow.curPlayLst.shuffleOn()
                     mediaPlayList.shuffle()
                     console.log("Selected Shuffle.  Playback state is:", mediaPlayList.playbackMode, Playlist.Random)
                 } else {
