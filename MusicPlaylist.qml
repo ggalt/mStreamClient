@@ -10,6 +10,8 @@ JSONListModel {
     property bool looping: false
     property bool shuffle: false
 
+    signal endOfList
+
     SortFilterProxyModel {
         id: sortedModel
 
@@ -56,18 +58,35 @@ JSONListModel {
         shuffle = false
     }
 
+    function current() {
+        if( shuffle ) {
+            return sortedModel.get(currentIndex)["filepath"]
+        } else {
+            return sorterModel.get(currentIndex)["filepath"]
+        }
+    }
+
     function next() {
         currentIndex++;
-        if(currentIndex >= titleCount && looping) {
-            currentIndex = 0
+        if( currentIndex > titleCount ) {
+            if(looping) {
+                currentIndex = 0
+                return current()
+            } else {
+                endOfList()
+                return ""
+            }
         } else {
-            return sortedModel.get(currentIndex)["filepath"]
+            return current()
         }
-
-        return
     }
 
     function previous() {
+        currentIndex--;
+        if( currentIndex < 0 ) {    // always loop around, even if we are not "looping"
+            currentIndex = titleCount-1
+        }
+        return current()
     }
 
 }
