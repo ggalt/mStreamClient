@@ -43,9 +43,9 @@ ApplicationWindow {
         id: currentPlayList
     }
 
-    property var playList: []
-    property var nowPlaying: []
-    property int currentTrack: 0
+//    property var playList: []
+//    property var nowPlaying: []
+    property alias currentTrack: currentPlayList.currentIndex
     property bool isPlaying: false
     property int playlistAddAt: 0
     property alias toolBarText: toolBarLabel.scrollText
@@ -201,10 +201,10 @@ ApplicationWindow {
     function updatePlaylist(m_item, typeOfItem, action) { // m_item needs to be the name of an artist, album, playlist or song
         console.log("Update Playlist", m_item, typeOfItem, action)
         if(action === "replace") {
-            playList = []
-            currentPlayListJSONModel.clear()
+//            playList = []
+//            currentPlayListJSONModel.clear()
             currentPlayList.clear()
-            nowPlaying.clearPlaylist()
+//            nowPlaying.clearPlaylist()
             playlistAddAt = 0
         }
 
@@ -222,11 +222,12 @@ ApplicationWindow {
     function loadToPlaylist() {
         console.log("gettingArtists is:", gettingArtists, "gettingAlbums is:", gettingAlbums, "gettingTitles is:", gettingTitles)
         if( gettingArtists <= 0 && gettingAlbums <= 0 && gettingTitles <= 0) {
-            console.log("loading playlist whch has length of:", playList.length)
+            console.log("loading playlist whch has length of:", curPlayLst.titleCount)
             isPlaying = true
             nowPlaying.visible = true
-            nowPlaying.loadPlaylist(playList, playlistAddAt - playList.length)  // we've been incrementing the "playlistAddAt" variable, so remove the len of the list
+//            nowPlaying.loadPlaylist(playList, playlistAddAt - playList.length)  // we've been incrementing the "playlistAddAt" variable, so remove the len of the list
             stackView.push("qrc:/PlayingListForm.qml")
+            nowPlaying.startPlay()
 //        } else {
 //            console.log("gettingArtists is:", gettingArtists, "gettingAlbums is:", gettingAlbums, "gettingTitles is:", gettingTitles)
         }
@@ -235,9 +236,9 @@ ApplicationWindow {
     function playlistAddSong(songObj) {   // this actually adds the songs to our playlist
         songObj.playListPosition = playlistAddAt++      // add the playListPosition role
 //        console.log(JSON.stringify(songObj))
-        currentPlayListJSONModel.add(songObj)
+//        currentPlayListJSONModel.add(songObj)
         currentPlayList.add(songObj)
-        playList.push(songObj)
+//        playList.push(songObj)
         gettingTitles--;
         loadToPlaylist();
     }
@@ -303,7 +304,8 @@ ApplicationWindow {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             scrollFontPointSize: 20
-            scrollText: isPlaying ? "Artist:"+playList[currentTrack].metadata["artist"]+" - Title:"+ playList[currentTrack].metadata["title"] : "mStream Client"
+            scrollText: "mStream Client"
+//            scrollText: isPlaying ? "Artist:"+playList[currentTrack].metadata["artist"]+" - Title:"+ playList[currentTrack].metadata["title"] : "mStream Client"
         }
 
 

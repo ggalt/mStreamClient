@@ -9,19 +9,30 @@ Item {
     width: 400
     height: 400
 
-    function loadPlaylist(currentPlaylist,  startingAt) {
-        console.log("loading playlist:", currentPlaylist, startingAt, currentPlaylist.length)
-        for( var i = startingAt; i < currentPlaylist.length; i++ ) {
-//            mediaPlayList.addItem(mainWindow.serverURL+"/media/"+mainWindow.fullyEncodeURI(currentPlaylist[i].filepath)+"?token="+mainWindow.myToken)
-//            console.log(mainWindow.serverURL+"/media/"+mainWindow.fullyEncodeURI(currentPlaylist[i].filepath)+"?token="+mainWindow.myToken)
-            console.log("current position and len:",i, currentPlaylist.length)
-            mediaPlayList.addItem(mainWindow.serverURL+"/media/"+currentPlaylist[i].filepath+"?token="+mainWindow.myToken)
-            console.log("path to song:", mainWindow.serverURL+"/media/"+currentPlaylist[i].filepath+"?token="+mainWindow.myToken)
-        }
-    }
+    //    property alias myPlayList: mainWindow.curPlayLst
+    //    property alias myServer: mainWindow.serverURL
+    //    property alias myToken: mainWindow.myToken
 
-    function clearPlaylist() {
-        mediaPlayList.clear()
+    //    function loadPlaylist(currentPlaylist,  startingAt) {
+    //        console.log("loading playlist:", currentPlaylist, startingAt, currentPlaylist.length)
+    //        for( var i = startingAt; i < currentPlaylist.length; i++ ) {
+    //            mediaPlayList.addItem(mainWindow.serverURL+"/media/"+mainWindow.fullyEncodeURI(currentPlaylist[i].filepath)+"?token="+mainWindow.myToken)
+    //            console.log(mainWindow.serverURL+"/media/"+mainWindow.fullyEncodeURI(currentPlaylist[i].filepath)+"?token="+mainWindow.myToken)
+    //            console.log("current position and len:",i, currentPlaylist.length)
+    //            mediaPlayList.addItem(mainWindow.serverURL+"/media/"+currentPlaylist[i].filepath+"?token="+mainWindow.myToken)
+    //            console.log("path to song:", mainWindow.serverURL+"/media/"+currentPlaylist[i].filepath+"?token="+mainWindow.myToken)
+    //        }
+    //    }
+
+    //    function clearPlaylist() {
+    //        mediaPlayList.clear()
+    //    }
+
+    signal shuffleOn
+    signal shuffleOff
+
+    function startPlay() {
+        mediaPlayer.startPlaying()
     }
 
     Frame {
@@ -55,7 +66,7 @@ Item {
         ColorProgressBar {
             id: progressBar
             backgroundOpacity: 1
-//            progressColor: "#0da3fa"
+            //            progressColor: "#0da3fa"
             progressGradient: Gradient {
                 GradientStop {
                     position: 0
@@ -97,29 +108,38 @@ Item {
         }
     }
 
+
     MediaPlayer {
         id: mediaPlayer
         audioRole: MediaPlayer.MusicRole
 
         autoPlay: true
 
-        playlist: Playlist {
-            id: mediaPlayList
+        //        playlist: Playlist {
+        //            id: mediaPlayList
 
+        //        }
+
+        function endOfPlaylist() {
+            console.log("Playlist ended and received by player");
         }
+
+        Component.onCompleted: {
+            curPlayLst.endOfList.connect(endOfPlaylist);
+            displaySongInfo()
+        }
+
+        function displaySongInfo() {
+            toolBarLabel.scrollText = "Artist:"+curPlayLst.currentSongObject().metadata["artist"] + " / "+
+                    "Album:"+curPlayLst.currentSongObject().metadata["album"] + " / "+
+                    "Title:"+curPlayLst.currentSongObject().metadata["title"];
+            coverImage.source = serverURL+"/album-art/"+curPlayLst.currentSongObject().metadata["album-art"]+"?token="+myToken
+        }
+
         onPlaybackStateChanged: {
             console.log("onPlaybackStateChanged", playbackState)
             if( playbackState === MediaPlayer.PlayingState ) {
-                console.log("playlist has:", mediaPlayList.itemCount)
-                if(mediaPlayList.currentIndex < mainWindow.playList.length && mediaPlayList.currentIndex >= 0) {
-                    console.log("current index and length of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
-                    mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Album:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["album"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
-                    coverImage.source=mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
-
-
-                } else {
-                    console.log("current index passed end of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
-                }
+                displaySongInfo()
             } else if( playbackState === MediaPlayer.PausedState ) {
                 console.log("Paused State")
             } else if( playbackState === MediaPlayer.StoppedState ) {
@@ -135,23 +155,23 @@ Item {
             console.log("onSourceChanged")
         }
 
+
         onStatusChanged: {
-            if( status === MediaPlayer.Loading || status === MediaPlayer.Loaded ) {
-                if(mediaPlayList.currentIndex < mainWindow.playList.length && mediaPlayList.currentIndex >= 0) {
-                    console.log("current index and length of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
-                    mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Album:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["album"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
-//                    mainWindow.toolBarText = "Artist:"+mainWindow.playList[mediaPlayList.currentIndex].metadata["artist"]+" - Title:"+ mainWindow.playList[mediaPlayList.currentIndex].metadata["title"]
-                    coverImage.source=mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
-                    console.log("Cover image URL:", mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"])
-
-
-                } else {
-                    console.log("current index passed end of playlist:", mediaPlayList.currentIndex, mainWindow.playList.length)
-                }
+            if( status === MediaPlayer.EndOfMedia ) {
+                curPlayLst.next()
+                displaySongInfo()
+            } else if( status === MediaPlayer.NoMedia) {
+                mediaPlayer.source=curPlayLst.current()
             }
 
             console.log("onStatusChanged", getStatus(), "error state:", errorString)
 
+        }
+
+        function startPlaying() {
+            if( status === MediaPlayer.NoMedia ) {
+                mediaPlayer.source = serverURL+"/media/"+curPlayLst.current()+"?token="+myToken
+            }
         }
 
         function getStatus() {
@@ -202,7 +222,6 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             buttonImage: mediaPlayer.playbackState === MediaPlayer.PlayingState ? "qrc:/pause.png" : "qrc:/play.png"
             onClicked: {
-                coverImage.source=mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
                 if(mediaPlayer.playbackState === MediaPlayer.PlayingState )
                     mediaPlayer.pause()
                 else
@@ -223,7 +242,10 @@ Item {
             anchors.leftMargin: 10
             anchors.verticalCenter: parent.verticalCenter
             buttonImage: "reverse.png"
-            onClicked:  mediaPlayList.previous()
+            onClicked: {
+                console.log("previous pressed")
+                mediaPlayer.source = serverURL+"/media/"+curPlayLst.previous()+"?token="+myToken
+            }
         }
 
         ImageButton {
@@ -237,8 +259,7 @@ Item {
             buttonImage: "forward.png"
             onClicked: {
                 console.log("next pressed")
-                console.log("playlist current index:", mediaPlayList.currentIndex, "Playlist length:", mediaPlayList.itemCount)
-                mediaPlayList.next()
+                mediaPlayer.source = serverURL+"/media/"+curPlayLst.next()+"?token="+myToken
             }
         }
 
@@ -253,11 +274,12 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             buttonImage: checked ? "loop.png" : "noloop.png"
             onClicked: {
-                if(btnLoop.checked) {
-                    mediaPlayList.playbackMode = Playlist.Loop
-                } else {
-                    mediaPlayList.playbackMode = Playlist.CurrentItemOnce
-                }
+                 curPlayLst.loop(checked)
+                //                if(btnLoop.checked) {
+                //                    mediaPlayList.playbackMode = Playlist.Loop
+                //                } else {
+                //                    mediaPlayList.playbackMode = Playlist.CurrentItemOnce
+                //                }
             }
         }
 
@@ -273,12 +295,17 @@ Item {
             buttonImage: checked ? "shuffle.png" : "noshuffle.png"
             onClicked: {
                 if( btnShuffle.checked ) {
-//                    mediaPlayList.playbackMode = Playlist.Random
-                    mainWindow.curPlayLst.shuffleOn()
-                    mediaPlayList.shuffle()
-                    console.log("Selected Shuffle.  Playback state is:", mediaPlayList.playbackMode, Playlist.Random)
+                    //                    mediaPlayList.playbackMode = Playlist.Random
+                    curPlayLst.shuffleOn()
+                    shuffleOn()
+//                    stackView.currentItem.shuffleOn()
+                    //                    mediaPlayList.shuffle()
+                    //                    console.log("Selected Shuffle.  Playback state is:", mediaPlayList.playbackMode, Playlist.Random)
                 } else {
-                    mediaPlayList.playbackMode = Playlist.Sequential
+                    curPlayLst.shuffleOff()
+                    shuffleOff()
+//                    stackView.currentItem.shuffleOff()
+                    //                    mediaPlayList.playbackMode = Playlist.Sequential
                 }
 
             }

@@ -4,20 +4,20 @@ ScrollingListView {
     id: playlistForm
 
     formName: "Playlist"
-    myModel: currentPlayList.model
-//    highlightLetter: myCurrentItem.myData.metadata.title[0]
+//    myModel: currentPlayList.model
 
-//    function knuthShuffle(arr) {
-//        var rand, temp, i;
+    Component.onCompleted: {
+        nowPlaying.shuffleOn.connect(shuffleOn())
+        nowPlaying.shuffleOff.connect(shuffleOff())
+    }
 
-//        for (i = arr.length - 1; i > 0; i -= 1) {
-//            rand = Math.floor((i + 1) * Math.random());//get random between zero and i (inclusive)
-//            temp = arr[rand];//swap i and the zero-indexed number
-//            arr[rand] = arr[i];
-//            arr[i] = temp;
-//        }
-//        return arr;
-//    }
+    function shuffleOn() {
+        myModel=currentPlayList.sortedModel
+    }
+
+    function shuffleOff() {
+        myModel=currentPlayList.model
+    }
 
 
     myDelegate:Item {

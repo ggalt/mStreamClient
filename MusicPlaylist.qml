@@ -58,12 +58,21 @@ JSONListModel {
         shuffle = false
     }
 
-    function current() {
+    function currentSongObject() {
         if( shuffle ) {
-            return sortedModel.get(currentIndex)["filepath"]
+            return sortedModel.get(currentIndex)
         } else {
-            return sorterModel.get(currentIndex)["filepath"]
+            return sorterModel.get(currentIndex)
         }
+    }
+
+    function current() {
+        return currentSongObject()["filepath"]
+//        if( shuffle ) {
+//            return sortedModel.get(currentIndex)["filepath"]
+//        } else {
+//            return sorterModel.get(currentIndex)["filepath"]
+//        }
     }
 
     function next() {
