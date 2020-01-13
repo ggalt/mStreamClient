@@ -9,29 +9,22 @@ Item {
     width: 400
     height: 400
 
-    //    property alias myPlayList: mainWindow.curPlayLst
-    //    property alias myServer: mainWindow.serverURL
-    //    property alias myToken: mainWindow.myToken
-
-    //    function loadPlaylist(currentPlaylist,  startingAt) {
-    //        console.log("loading playlist:", currentPlaylist, startingAt, currentPlaylist.length)
-    //        for( var i = startingAt; i < currentPlaylist.length; i++ ) {
-    //            mediaPlayList.addItem(mainWindow.serverURL+"/media/"+mainWindow.fullyEncodeURI(currentPlaylist[i].filepath)+"?token="+mainWindow.myToken)
-    //            console.log(mainWindow.serverURL+"/media/"+mainWindow.fullyEncodeURI(currentPlaylist[i].filepath)+"?token="+mainWindow.myToken)
-    //            console.log("current position and len:",i, currentPlaylist.length)
-    //            mediaPlayList.addItem(mainWindow.serverURL+"/media/"+currentPlaylist[i].filepath+"?token="+mainWindow.myToken)
-    //            console.log("path to song:", mainWindow.serverURL+"/media/"+currentPlaylist[i].filepath+"?token="+mainWindow.myToken)
-    //        }
-    //    }
-
-    //    function clearPlaylist() {
-    //        mediaPlayList.clear()
-    //    }
-
     signal shuffleOn
     signal shuffleOff
+    signal settingGlobalVolume(real vol)
+
+    signal currentSong(int pos)
+
+    property bool isPlaying: false
+
+    property int _NEXT: 1
+    property int _PREVIOUS: -1
+    property int _CURRENT: 0
+
+    property alias mediaVolume: mediaPlayer.volume
 
     function startPlay() {
+        isPlaying = true;
         mediaPlayer.startPlaying()
     }
 
@@ -58,8 +51,6 @@ Item {
             anchors.topMargin: 0
             anchors.right: volSlider.left
             anchors.rightMargin: 5
-
-            //            source:  mainWindow.serverURL+"/album-art/"+mainWindow.playList[mainWindow.currentTrack].metadata["album-art"]+"?token="+mainWindow.myToken
             fillMode: Image.PreserveAspectFit
         }
 
@@ -115,13 +106,9 @@ Item {
 
         autoPlay: true
 
-        //        playlist: Playlist {
-        //            id: mediaPlayList
-
-        //        }
-
         function endOfPlaylist() {
             console.log("Playlist ended and received by player");
+            isPlaying=false;
         }
 
         Component.onCompleted: {
@@ -130,10 +117,24 @@ Item {
         }
 
         function displaySongInfo() {
-            toolBarLabel.scrollText = "Artist:"+curPlayLst.currentSongObject().metadata["artist"] + " / "+
-                    "Album:"+curPlayLst.currentSongObject().metadata["album"] + " / "+
-                    "Title:"+curPlayLst.currentSongObject().metadata["title"];
-            coverImage.source = serverURL+"/album-art/"+curPlayLst.currentSongObject().metadata["album-art"]+"?token="+myToken
+            if(isPlaying) {
+                toolBarLabel.scrollText = "Artist:"+curPlayLst.currentSongObject().metadata["artist"] + " / "+
+                        "Album:"+curPlayLst.currentSongObject().metadata["album"] + " / "+
+                        "Title:"+curPlayLst.currentSongObject().metadata["title"];
+                coverImage.source = serverURL+"/album-art/"+curPlayLst.currentSongObject().metadata["album-art"]+"?token="+myToken
+                currentSong(curPlayLst.currentIndex)
+            }
+        }
+
+        function playTrack(which) {
+            if(which===_NEXT) {
+                mediaPlayer.source = serverURL+"/media/"+curPlayLst.next()+"?token="+myToken
+            } else if( which===_PREVIOUS) {
+                mediaPlayer.source = serverURL+"/media/"+curPlayLst.previous()+"?token="+myToken
+            } else {
+                mediaPlayer.source = serverURL+"/media/"+curPlayLst.current()+"?token="+myToken
+            }
+            displaySongInfo()
         }
 
         onPlaybackStateChanged: {
@@ -155,13 +156,11 @@ Item {
             console.log("onSourceChanged")
         }
 
-
         onStatusChanged: {
             if( status === MediaPlayer.EndOfMedia ) {
-                curPlayLst.next()
-                displaySongInfo()
+                playTrack(_NEXT)
             } else if( status === MediaPlayer.NoMedia) {
-                mediaPlayer.source=curPlayLst.current()
+               playTrack(_CURRENT)
             }
 
             console.log("onStatusChanged", getStatus(), "error state:", errorString)
@@ -169,9 +168,10 @@ Item {
         }
 
         function startPlaying() {
-            if( status === MediaPlayer.NoMedia ) {
-                mediaPlayer.source = serverURL+"/media/"+curPlayLst.current()+"?token="+myToken
-            }
+            playTrack(_CURRENT)
+            //            if( status === MediaPlayer.NoMedia ) {
+//            mediaPlayer.source = serverURL+"/media/"+curPlayLst.current()+"?token="+myToken
+            //            }
         }
 
         function getStatus() {
@@ -244,7 +244,8 @@ Item {
             buttonImage: "reverse.png"
             onClicked: {
                 console.log("previous pressed")
-                mediaPlayer.source = serverURL+"/media/"+curPlayLst.previous()+"?token="+myToken
+                mediaPlayer.playTrack(_PREVIOUS)
+//                mediaPlayer.source = serverURL+"/media/"+curPlayLst.previous()+"?token="+myToken
             }
         }
 
@@ -259,7 +260,8 @@ Item {
             buttonImage: "forward.png"
             onClicked: {
                 console.log("next pressed")
-                mediaPlayer.source = serverURL+"/media/"+curPlayLst.next()+"?token="+myToken
+                mediaPlayer.playTrack(_NEXT)
+//                mediaPlayer.source = serverURL+"/media/"+curPlayLst.next()+"?token="+myToken
             }
         }
 
@@ -274,12 +276,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             buttonImage: checked ? "loop.png" : "noloop.png"
             onClicked: {
-                 curPlayLst.loop(checked)
-                //                if(btnLoop.checked) {
-                //                    mediaPlayList.playbackMode = Playlist.Loop
-                //                } else {
-                //                    mediaPlayList.playbackMode = Playlist.CurrentItemOnce
-                //                }
+                curPlayLst.loop(checked)
             }
         }
 
@@ -294,18 +291,23 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             buttonImage: checked ? "shuffle.png" : "noshuffle.png"
             onClicked: {
+                console.log("form name is:", stackView.currentItem.objectName)
                 if( btnShuffle.checked ) {
-                    //                    mediaPlayList.playbackMode = Playlist.Random
                     curPlayLst.shuffleOn()
                     shuffleOn()
-//                    stackView.currentItem.shuffleOn()
-                    //                    mediaPlayList.shuffle()
-                    //                    console.log("Selected Shuffle.  Playback state is:", mediaPlayList.playbackMode, Playlist.Random)
+//                    if(stackView.currentItem.objectName==="playlistForm") {
+//                        stackView.pop()
+//                        stackView.push("qrc:/ShuffledPlayingListForm.qml")
+//                        console.log("pushed shuffle view")
+//                    }
                 } else {
                     curPlayLst.shuffleOff()
                     shuffleOff()
-//                    stackView.currentItem.shuffleOff()
-                    //                    mediaPlayList.playbackMode = Playlist.Sequential
+//                    if(stackView.currentItem.objectName==="shuffledPlaylistForm") {
+//                        stackView.pop()
+//                        stackView.push("qrc:/PlayingListForm.qml")
+//                        console.log("pushed standard view")
+//                    }
                 }
 
             }
@@ -314,6 +316,7 @@ Item {
 
     }
 
+    Component.onDestruction: mainWindow.setGlobalVolume(mediaPlayer.volume)
 }
 
 /*##^##

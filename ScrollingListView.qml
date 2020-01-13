@@ -11,6 +11,15 @@ Item {
     property alias myDelegate: listView.delegate
     property alias highlightLetter: lblLetter.text
     property alias myCurrentItem: listView.currentItem
+    property alias myCurrentIndex: listView.currentIndex
+    property alias myHighLight: listView.highlight
+    property alias highlightFollowsCurrentItem: listView.highlightFollowsCurrentItem
+    property alias myhighlightRangeMode: listView.highlightRangeMode
+
+
+    function setListViewIndex(idx) {
+        listView.currentIndex = idx
+    }
 
     ScrollView {
         anchors.fill: parent

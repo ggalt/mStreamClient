@@ -20,6 +20,7 @@ ApplicationWindow {
 //        property alias settingToken: mainWindow.myToken
         property alias settingServerURL: mainWindow.serverURL
         property alias settingSetup: mainWindow.isSetup
+        property alias settingVolume: mainWindow.mediaVolume
     }
 
     JSONListModel {
@@ -56,6 +57,7 @@ ApplicationWindow {
     property string passWord: appSettings.settingPassWord
     property string myToken: ""
     property string serverURL: appSettings.settingServerURL
+    property real mediaVolume: appSettings.settingVolume
 //    property string serverURL: appSettings.settingServerURL
     property bool isSetup: appSettings.settingSetup
 
@@ -100,12 +102,9 @@ ApplicationWindow {
         xmlhttp.onreadystatechange = function() { // Call a function when the state changes.
             if (xmlhttp.readyState === 4) {
                 if (xmlhttp.status === 200) {
-                    console.log("ok")
                     console.log(xmlhttp.responseText)
                     var resp = JSON.parse(xmlhttp.responseText)
                     myToken = resp.token
-                    console.log(resp.token)
-                    console.log("end")
                 } else {
                     console.log("error: " + xmlhttp.status)
                 }
@@ -125,7 +124,6 @@ ApplicationWindow {
         xmlhttp.setRequestHeader("datatype", "json");
 
         if( myToken !== '' ) {
-            console.log("setting token")
             xmlhttp.setRequestHeader("x-access-token", myToken)
         }
 
@@ -158,12 +156,12 @@ ApplicationWindow {
     }
 
     function requestArtistAlbums(artistName) {
-        console.log("Requesting albums for:", artistName)
+//        console.log("Requesting albums for:", artistName)
         serverCall("/db/artists-albums", JSON.stringify({ 'artist' : artistName }), "POST", albumRequestResp)
     }
 
     function requestAlbumSongs(albumName) {
-        console.log("Requesting songs for album:", albumName)
+//        console.log("Requesting songs for album:", albumName)
         serverCall("/db/album-songs", JSON.stringify({ 'album' : albumName }), "POST", songRequestResp)
     }
 
@@ -188,24 +186,21 @@ ApplicationWindow {
 
     function actionClick(action) {
         if(action === "Artists") {
-            console.log("Artist Click")
+//            console.log("Artist Click")
             requestArtists();
         } else if (action === "Albums") {
-            console.log("Album Click")
+//            console.log("Album Click")
             requestAlbums();
         } else if (action === "Playlists") {
-            console.log("Playlist Click")
+//            console.log("Playlist Click")
         }
     }
 
     function updatePlaylist(m_item, typeOfItem, action) { // m_item needs to be the name of an artist, album, playlist or song
-        console.log("Update Playlist", m_item, typeOfItem, action)
+//        console.log("Update Playlist", m_item, typeOfItem, action)
         if(action === "replace") {
-//            playList = []
-//            currentPlayListJSONModel.clear()
             currentPlayList.clear()
-//            nowPlaying.clearPlaylist()
-            playlistAddAt = 0
+//            playlistAddAt = 0
         }
 
         if(typeOfItem === "artist") {
@@ -220,31 +215,29 @@ ApplicationWindow {
     }
 
     function loadToPlaylist() {
-        console.log("gettingArtists is:", gettingArtists, "gettingAlbums is:", gettingAlbums, "gettingTitles is:", gettingTitles)
+//        console.log("gettingArtists is:", gettingArtists, "gettingAlbums is:", gettingAlbums, "gettingTitles is:", gettingTitles)
         if( gettingArtists <= 0 && gettingAlbums <= 0 && gettingTitles <= 0) {
-            console.log("loading playlist whch has length of:", curPlayLst.titleCount)
+//            console.log("loading playlist whch has length of:", curPlayLst.titleCount)
             isPlaying = true
+            curPlayLst.updateList()
             nowPlaying.visible = true
-//            nowPlaying.loadPlaylist(playList, playlistAddAt - playList.length)  // we've been incrementing the "playlistAddAt" variable, so remove the len of the list
             stackView.push("qrc:/PlayingListForm.qml")
+            nowPlaying.currentSong.connect(stackView.currentItem.setCurrentIndex)
             nowPlaying.startPlay()
-//        } else {
-//            console.log("gettingArtists is:", gettingArtists, "gettingAlbums is:", gettingAlbums, "gettingTitles is:", gettingTitles)
         }
     }
 
     function playlistAddSong(songObj) {   // this actually adds the songs to our playlist
         songObj.playListPosition = playlistAddAt++      // add the playListPosition role
-//        console.log(JSON.stringify(songObj))
-//        currentPlayListJSONModel.add(songObj)
-        currentPlayList.add(songObj)
-//        playList.push(songObj)
+        currentPlayList.shuffleAdd(songObj)
+//        console.log("song object:", JSON.stringify(songObj))
+//        currentPlayList.add(songObj)
         gettingTitles--;
         loadToPlaylist();
     }
 
     function playlistAddAlbum(title) {  // add songs from album
-        console.log("album get count:", gettingAlbums)
+//        console.log("album get count:", gettingAlbums)
         gettingAlbums++;
         serverCall("/db/album-songs", JSON.stringify({ 'album' : title }), "POST", playlistAddAlbumResp)
     }
@@ -265,7 +258,7 @@ ApplicationWindow {
             playlistAddSong(albumResp[i])
         }
         gettingAlbums--;
-        console.log("exit getting albums with count:", gettingAlbums)
+//        console.log("exit getting albums with count:", gettingAlbums)
         loadToPlaylist()
     }
 
@@ -276,8 +269,18 @@ ApplicationWindow {
             playlistAddAlbum(artistResp.albums[i].name)
         }
         gettingArtists--;
-        console.log("exit getting artists")
+//        console.log("exit getting artists")
         loadToPlaylist()
+    }
+
+    function selectSongAtIndex(idx) {
+//        console.log("selected song at index:", idx)
+        curPlayLst.setMusicPlaylistIndex(idx)
+        nowPlaying.startPlay()
+    }
+
+    function setGlobalVolume(vol) {
+        mainWindow.mediaVolume = vol
     }
 
     header: ToolBar {
@@ -305,7 +308,6 @@ ApplicationWindow {
             anchors.right: parent.right
             scrollFontPointSize: 20
             scrollText: "mStream Client"
-//            scrollText: isPlaying ? "Artist:"+playList[currentTrack].metadata["artist"]+" - Title:"+ playList[currentTrack].metadata["title"] : "mStream Client"
         }
 
 
@@ -397,24 +399,12 @@ ApplicationWindow {
             id: nowPlaying
             visible: false
             anchors.fill: parent
+            mediaVolume: mainWindow.mediaVolume
         }
     }
 
-
-//    property string settingUserName: ""
-//    property string settingPassWord: ""
-//    property string settingToken: ""
-////        property string serverURL: "http://192.168.1.50:3000"
-//    property string serverURL: "http://localhost:3000"
-//    property bool restoreSession: false
-//    property bool settingsComplete: false
-
-
-
     Component.onCompleted: {
-
         if( serverURL.length === 0 ) {
-            // we assume that we aren't set up
             drawer.open()
         } else {
             sendLogin()

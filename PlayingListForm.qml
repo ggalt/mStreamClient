@@ -2,28 +2,27 @@ import QtQuick 2.13
 
 ScrollingListView {
     id: playlistForm
+    objectName: "playlistForm"
 
     formName: "Playlist"
-//    myModel: currentPlayList.model
+    myModel: currentPlayList.model
 
-    Component.onCompleted: {
-        nowPlaying.shuffleOn.connect(shuffleOn())
-        nowPlaying.shuffleOff.connect(shuffleOff())
+    myHighLight: highlight
+    myhighlightRangeMode: ListView.NoHighlightRange
+
+    property int delegateHeight: 87
+    property int delegateWidth: width
+
+    highlightFollowsCurrentItem: true
+
+    function setCurrentIndex(idx) {
+        setListViewIndex(idx)
     }
-
-    function shuffleOn() {
-        myModel=currentPlayList.sortedModel
-    }
-
-    function shuffleOff() {
-        myModel=currentPlayList.model
-    }
-
 
     myDelegate:Item {
         id: songTitleDelegate
-        height: 87
-        width: parent.width
+        height: delegateHeight
+        width: delegateWidth
 
         property variant myData: model
 
@@ -37,19 +36,19 @@ ScrollingListView {
             }
 
             onClicked: {
-                albumDelegate.ListView.view.currentIndex=index
-                console.log("click for:", albumLabel.text)
-                mainWindow.requestAlbumSongs(albumLabel.text)
+                console.log("clicked on item nubmer:", index)
+                setCurrentIndex(index)
+                mainWindow.selectSongAtIndex(myCurrentIndex)
             }
-            onPressed: albumDelegateRect.color = "lightgrey"
-            onReleased: albumDelegateRect.color = "white"
+            onPressed: songTitleDelegateRect.color = "lightgrey"
+            onReleased: songTitleDelegateRect.color = "white"
         }
 
         Rectangle {
             id: songTitleDelegateRect
             color: "white"
             anchors.fill: parent
-            anchors.margins: 1
+            anchors.margins: 2
             Image {
                 id: albumImage
                 height: parent.height - 4
@@ -62,7 +61,7 @@ ScrollingListView {
             }
             Text {
                 id: albumLabel
-                text: model.metadata.title
+                text: model.metadata.track+" - "+model.metadata.title
                 anchors.left: albumImage.right
                 anchors.leftMargin: 5
                 height: parent.height
@@ -73,6 +72,21 @@ ScrollingListView {
         }
 
     }
+    Component {
+        id: highlight
+        Rectangle {
+            width: delegateWidth
+            height: delegateHeight
+            color: "yellow"
+            border.width: 2
+            border.color: "yellow"
+            y: playlistForm.myCurrentItem.y
+//            Behavior on y {
+//                SpringAnimation {
+//                    spring: 3
+//                    damping: 0.2
+//                }
+//            }
+        }
+    }
 }
-
-

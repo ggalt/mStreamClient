@@ -7,6 +7,7 @@ JSONListModel {
     property int currentIndex: 0
     property alias titleCount: sorterModel.count
     property var shuffleArray: []
+    property var playListArray: []
     property bool looping: false
     property bool shuffle: false
 
@@ -28,11 +29,16 @@ JSONListModel {
         looping = status
     }
 
+    function setMusicPlaylistIndex(idx) {
+        console.log("set music play list to index number:", idx)
+        currentIndex = idx
+    }
+
     function knuthShuffle() {
-        shuffleArray=[]
-        for( var t = currentIndex; t < titleCount; t++) {  // create an array of ascending numbers to match what is left of the playlist
-            shuffleArray.push(t)
-        }
+//        shuffleArray=[]
+//        for( var t = currentIndex; t < titleCount; t++) {  // create an array of ascending numbers to match what is left of the playlist
+//            shuffleArray.push(t)
+//        }
 
         var rand, temp, i;
 
@@ -43,41 +49,60 @@ JSONListModel {
             shuffleArray[i] = temp;
         }
 
-        for( var c = currentIndex; c < titleCount; c++ ) {
-            console.log(shuffleArray[c])
-            setProperty(c, "playListPosition", shuffleArray[c])
+//        for( var c = currentIndex; c < titleCount; c++ ) {
+//            console.log(shuffleArray[c])
+//            setProperty(c, "playListPosition", shuffleArray[c])
+//        }
+    }
+
+    function shuffleAdd(jObj) {
+        playListArray.push(jObj)
+        shuffleArray.push(jObj)
+    }
+
+    function updateList() {
+        clear()
+        if(shuffle) {
+           for( var c=0; c < shuffleArray.length; c++) {
+               add(shuffleArray[c]);
+           }
+        } else {
+            for( var i=0; i < playListArray.length; i++) {
+                add(playListArray[i]);
+            }
         }
     }
 
     function shuffleOn() {
         knuthShuffle()
         shuffle = true
+        currentIndex=0
+        updateList()
     }
 
     function shuffleOff() {
         shuffle = false
+        currentIndex=0
+        updateList()
     }
 
     function currentSongObject() {
         if( shuffle ) {
-            return sortedModel.get(currentIndex)
+            return get(currentIndex)
         } else {
-            return sorterModel.get(currentIndex)
+            return get(currentIndex)
         }
     }
 
     function current() {
         return currentSongObject()["filepath"]
-//        if( shuffle ) {
-//            return sortedModel.get(currentIndex)["filepath"]
-//        } else {
-//            return sorterModel.get(currentIndex)["filepath"]
-//        }
     }
 
     function next() {
         currentIndex++;
-        if( currentIndex > titleCount ) {
+        if( currentIndex < titleCount ) {
+            return current()
+        } else {
             if(looping) {
                 currentIndex = 0
                 return current()
@@ -85,8 +110,6 @@ JSONListModel {
                 endOfList()
                 return ""
             }
-        } else {
-            return current()
         }
     }
 
@@ -98,4 +121,7 @@ JSONListModel {
         return current()
     }
 
+    onCurrentIndexChanged: {
+        console.log("current index of playlist is:", currentIndex)
+    }
 }

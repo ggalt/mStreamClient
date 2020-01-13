@@ -2,6 +2,7 @@ import QtQuick 2.0
 
 Item {
 
+    objectName: "HomeFormStart"
     property string formName: "Home"
 
     ListView {

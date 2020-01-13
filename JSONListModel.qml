@@ -76,5 +76,12 @@ Item {
     }
 
     function setProperty(index, prop, val) {
-        jsonModel.setProperty(index, prop, val)    }
+        jsonModel.setProperty(index, prop, val)
+    }
+
+    function set(index, jObj) {
+        if( typeof jObj === 'object' ) {
+            jsonModel.set(index, jObj)
+        }
+    }
 }
