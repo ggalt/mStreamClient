@@ -2,7 +2,6 @@ import QtQuick 2.13
 import QtQuick.Controls 2.13
 import QtQml 2.12
 import QtMultimedia 5.12
-import SortFilterProxyModel 0.2
 
 Item {
     id: element
@@ -134,6 +133,7 @@ Item {
             } else {
                 mediaPlayer.source = serverURL+"/media/"+curPlayLst.current()+"?token="+myToken
             }
+            mediaPlayer.play()
             displaySongInfo()
         }
 
@@ -295,6 +295,7 @@ Item {
                 if( btnShuffle.checked ) {
                     curPlayLst.shuffleOn()
                     shuffleOn()
+                    startPlay()
 //                    if(stackView.currentItem.objectName==="playlistForm") {
 //                        stackView.pop()
 //                        stackView.push("qrc:/ShuffledPlayingListForm.qml")
@@ -303,6 +304,7 @@ Item {
                 } else {
                     curPlayLst.shuffleOff()
                     shuffleOff()
+                    startPlay()
 //                    if(stackView.currentItem.objectName==="shuffledPlaylistForm") {
 //                        stackView.pop()
 //                        stackView.push("qrc:/PlayingListForm.qml")

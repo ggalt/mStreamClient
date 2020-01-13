@@ -1,5 +1,4 @@
 import QtQuick 2.13
-import SortFilterProxyModel 0.2
 
 JSONListModel {
     id: sorterModel
@@ -13,20 +12,11 @@ JSONListModel {
 
     signal endOfList
 
-    SortFilterProxyModel {
-        id: sortedModel
-
-        sourceModel: sorterModel.model
-
-        sorters: RoleSorter {
-            id: shuffleSort
-            roleName: "playListPosition"
-            sortOrder: Qt.AscendingOrder
-        }
-    }
-
     function loop(status) {
-        looping = status
+        if( status === true )
+            looping = true;
+        else
+            looping = false;
     }
 
     function setMusicPlaylistIndex(idx) {
@@ -35,10 +25,6 @@ JSONListModel {
     }
 
     function knuthShuffle() {
-//        shuffleArray=[]
-//        for( var t = currentIndex; t < titleCount; t++) {  // create an array of ascending numbers to match what is left of the playlist
-//            shuffleArray.push(t)
-//        }
 
         var rand, temp, i;
 
@@ -49,10 +35,6 @@ JSONListModel {
             shuffleArray[i] = temp;
         }
 
-//        for( var c = currentIndex; c < titleCount; c++ ) {
-//            console.log(shuffleArray[c])
-//            setProperty(c, "playListPosition", shuffleArray[c])
-//        }
     }
 
     function shuffleAdd(jObj) {
