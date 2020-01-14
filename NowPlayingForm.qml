@@ -133,7 +133,7 @@ Item {
             } else {
                 mediaPlayer.source = serverURL+"/media/"+curPlayLst.current()+"?token="+myToken
             }
-            mediaPlayer.play()
+//            mediaPlayer.play()
             displaySongInfo()
         }
 
