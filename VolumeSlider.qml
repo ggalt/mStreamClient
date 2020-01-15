@@ -4,7 +4,10 @@ import QtQuick.Controls 2.13
 Rectangle {
     id: root
 
-    property real volume: 0.0
+    property real volume: 0.3
+    property real max: 1.0
+    property real min: 0.0
+
     property alias unVolumeColor: current2Max.color
     property alias volumeColor: min2Current.color
     property alias volButtonColor: sliderButton.color
@@ -15,14 +18,14 @@ Rectangle {
         anchors.right: parent.right
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.bottom: sliderButton.horizontalCenter
+        anchors.bottom: sliderButton.verticalCenter
     }
 
     Rectangle {
         id: min2Current
         anchors.right: parent.right
         anchors.left: parent.left
-        anchors.top: current2Max.bottom
+        anchors.top: sliderButton.verticalCenter
         anchors.bottom: parent.bottom
     }
 
@@ -30,15 +33,29 @@ Rectangle {
         id: sliderButton
         width: parent.width
         height: parent.width
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: volume * (root.height - sliderButton.height)
+
         MouseArea {
             anchors.fill: parent
-            onPressAndHold: {
-                sliderButton.y = mouseY
+
+            drag {
+                target: sliderButton
+                axis:   Drag.YAxis
+                maximumY: root.height - sliderButton.height
+                minimumY: 0
+            }
+
+            onPositionChanged: {
+                if( drag.active ) {
+                    sliderButton.y = mouseY
+                    console.log("y changed:", mouseY)
+                }
             }
         }
     }
 
+    Component.objectName: console.log("original y:", sliderButton.y, volume * (root.height - sliderButton.height))
 }
 
 /*##^##

@@ -83,19 +83,35 @@ Item {
             backgroundColor: "white"
         }
 
-        Slider {
+        VolumeSlider {
             id: volSlider
+            width: 30
             anchors.bottom: progressBar.top
             anchors.bottomMargin: 0
             anchors.top: parent.top
             anchors.topMargin: 0
             anchors.right: parent.right
             anchors.rightMargin: 0
-            orientation: Qt.Vertical
-            value: mediaPlayer.volume
-            onValueChanged: mediaPlayer.volume = value
-
+            unVolumeColor: "blue"
+            volumeColor: "green"
+//            orientation: Qt.Vertical
+            volume: mediaPlayer.volume
+            onVolumeChanged: mediaPlayer.volume = volume
         }
+
+        //        Slider {
+        //            id: volSlider
+        //            anchors.bottom: progressBar.top
+        //            anchors.bottomMargin: 0
+        //            anchors.top: parent.top
+        //            anchors.topMargin: 0
+        //            anchors.right: parent.right
+        //            anchors.rightMargin: 0
+        //            orientation: Qt.Vertical
+        //            value: mediaPlayer.volume
+        //            onValueChanged: mediaPlayer.volume = value
+
+        //        }
     }
 
 
@@ -133,7 +149,7 @@ Item {
             } else {
                 mediaPlayer.source = serverURL+"/media/"+curPlayLst.current()+"?token="+myToken
             }
-//            mediaPlayer.play()
+            //            mediaPlayer.play()
             displaySongInfo()
         }
 
@@ -160,7 +176,7 @@ Item {
             if( status === MediaPlayer.EndOfMedia ) {
                 playTrack(_NEXT)
             } else if( status === MediaPlayer.NoMedia) {
-               playTrack(_CURRENT)
+                playTrack(_CURRENT)
             }
 
             console.log("onStatusChanged", getStatus(), "error state:", errorString)
@@ -170,7 +186,7 @@ Item {
         function startPlaying() {
             playTrack(_CURRENT)
             //            if( status === MediaPlayer.NoMedia ) {
-//            mediaPlayer.source = serverURL+"/media/"+curPlayLst.current()+"?token="+myToken
+            //            mediaPlayer.source = serverURL+"/media/"+curPlayLst.current()+"?token="+myToken
             //            }
         }
 
@@ -245,7 +261,7 @@ Item {
             onClicked: {
                 console.log("previous pressed")
                 mediaPlayer.playTrack(_PREVIOUS)
-//                mediaPlayer.source = serverURL+"/media/"+curPlayLst.previous()+"?token="+myToken
+                //                mediaPlayer.source = serverURL+"/media/"+curPlayLst.previous()+"?token="+myToken
             }
         }
 
@@ -261,7 +277,7 @@ Item {
             onClicked: {
                 console.log("next pressed")
                 mediaPlayer.playTrack(_NEXT)
-//                mediaPlayer.source = serverURL+"/media/"+curPlayLst.next()+"?token="+myToken
+                //                mediaPlayer.source = serverURL+"/media/"+curPlayLst.next()+"?token="+myToken
             }
         }
 
@@ -296,20 +312,20 @@ Item {
                     curPlayLst.shuffleOn()
                     shuffleOn()
                     startPlay()
-//                    if(stackView.currentItem.objectName==="playlistForm") {
-//                        stackView.pop()
-//                        stackView.push("qrc:/ShuffledPlayingListForm.qml")
-//                        console.log("pushed shuffle view")
-//                    }
+                    //                    if(stackView.currentItem.objectName==="playlistForm") {
+                    //                        stackView.pop()
+                    //                        stackView.push("qrc:/ShuffledPlayingListForm.qml")
+                    //                        console.log("pushed shuffle view")
+                    //                    }
                 } else {
                     curPlayLst.shuffleOff()
                     shuffleOff()
                     startPlay()
-//                    if(stackView.currentItem.objectName==="shuffledPlaylistForm") {
-//                        stackView.pop()
-//                        stackView.push("qrc:/PlayingListForm.qml")
-//                        console.log("pushed standard view")
-//                    }
+                    //                    if(stackView.currentItem.objectName==="shuffledPlaylistForm") {
+                    //                        stackView.pop()
+                    //                        stackView.push("qrc:/PlayingListForm.qml")
+                    //                        console.log("pushed standard view")
+                    //                    }
                 }
 
             }
@@ -323,10 +339,10 @@ Item {
 
 /*##^##
 Designer {
-    D{i:3;anchors_height:14;anchors_y:294}D{i:4;anchors_width:200;anchors_x:31}D{i:6;anchors_height:100;anchors_width:100;anchors_x:46;anchors_y:12}
-D{i:5;anchors_height:200;anchors_width:200;anchors_x:43;anchors_y:48}D{i:8;anchors_x:50}
-D{i:9;anchors_x:0}D{i:10;anchors_x:110}D{i:11;anchors_x:205}D{i:12;anchors_x:262}
-D{i:7;anchors_height:100;anchors_width:100;anchors_x:46;anchors_y:12}
+    D{i:4;anchors_width:200;anchors_x:31}D{i:5;anchors_height:200;anchors_width:200;anchors_x:43;anchors_y:48}
+D{i:6;anchors_height:100;anchors_width:100;anchors_x:46;anchors_y:12}D{i:3;anchors_height:14;anchors_y:294}
+D{i:7;anchors_height:100;anchors_width:100;anchors_x:46;anchors_y:12}D{i:8;anchors_x:50}
+D{i:10;anchors_x:110}D{i:11;anchors_x:205}D{i:12;anchors_x:262}D{i:9;anchors_x:0}
 }
 ##^##*/
 
