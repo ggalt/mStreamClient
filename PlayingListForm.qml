@@ -16,6 +16,7 @@ ScrollingListView {
     highlightFollowsCurrentItem: true
 
     function setCurrentIndex(idx) {
+        console.log("set current index to:", idx)
         setListViewIndex(idx)
     }
 
@@ -46,9 +47,10 @@ ScrollingListView {
 
         Rectangle {
             id: songTitleDelegateRect
-            color: "white"
+//            color: "white"
             anchors.fill: parent
             anchors.margins: 2
+            opacity: myCurrentIndex === index ? 0.8 : 1.0
             Image {
                 id: albumImage
                 height: parent.height - 4

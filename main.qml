@@ -17,7 +17,6 @@ ApplicationWindow {
         id: appSettings
         property alias settingUserName: mainWindow.usrName
         property alias settingPassWord: mainWindow.passWord
-//        property alias settingToken: mainWindow.myToken
         property alias settingServerURL: mainWindow.serverURL
         property alias settingSetup: mainWindow.isSetup
         property alias settingVolume: mainWindow.mediaVolume
@@ -44,13 +43,10 @@ ApplicationWindow {
         id: currentPlayList
     }
 
-//    property var playList: []
-//    property var nowPlaying: []
     property alias currentTrack: currentPlayList.currentIndex
     property bool isPlaying: false
     property int playlistAddAt: 0
     property alias toolBarText: toolBarLabel.scrollText
-//    property alias toolBarText: toolBarLabel.text
     property alias curPlayLst: currentPlayList
 
     property string usrName: appSettings.settingUserName
@@ -58,7 +54,6 @@ ApplicationWindow {
     property string myToken: ""
     property string serverURL: appSettings.settingServerURL
     property real mediaVolume: appSettings.settingVolume
-//    property string serverURL: appSettings.settingServerURL
     property bool isSetup: appSettings.settingSetup
 
     property int gettingArtists: 0
@@ -197,7 +192,7 @@ ApplicationWindow {
     }
 
     function updatePlaylist(m_item, typeOfItem, action) { // m_item needs to be the name of an artist, album, playlist or song
-//        console.log("Update Playlist", m_item, typeOfItem, action)
+        console.log("Update Playlist", m_item, typeOfItem, action)
         if(action === "replace") {
             currentPlayList.clear()
 //            playlistAddAt = 0

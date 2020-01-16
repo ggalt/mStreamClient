@@ -27,6 +27,5 @@
         <file>noshuffle.png</file>
         <file>ScrollingListView.qml</file>
         <file>MusicPlaylist.qml</file>
-        <file>VolumeSlider.qml</file>
     </qresource>
 </RCC>

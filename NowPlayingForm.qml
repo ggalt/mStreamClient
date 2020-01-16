@@ -83,35 +83,19 @@ Item {
             backgroundColor: "white"
         }
 
-        VolumeSlider {
+        Slider {
             id: volSlider
-            width: 30
             anchors.bottom: progressBar.top
             anchors.bottomMargin: 0
             anchors.top: parent.top
             anchors.topMargin: 0
             anchors.right: parent.right
             anchors.rightMargin: 0
-            unVolumeColor: "blue"
-            volumeColor: "green"
-//            orientation: Qt.Vertical
-            volume: mediaPlayer.volume
-            onVolumeChanged: mediaPlayer.volume = volume
+            orientation: Qt.Vertical
+            value: mediaPlayer.volume
+            onValueChanged: mediaPlayer.volume = value
         }
 
-        //        Slider {
-        //            id: volSlider
-        //            anchors.bottom: progressBar.top
-        //            anchors.bottomMargin: 0
-        //            anchors.top: parent.top
-        //            anchors.topMargin: 0
-        //            anchors.right: parent.right
-        //            anchors.rightMargin: 0
-        //            orientation: Qt.Vertical
-        //            value: mediaPlayer.volume
-        //            onValueChanged: mediaPlayer.volume = value
-
-        //        }
     }
 
 
