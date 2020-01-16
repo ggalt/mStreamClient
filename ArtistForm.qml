@@ -5,6 +5,7 @@ import QtQuick.Controls 2.13
 
 ScrollingListView {
     id: artistPage
+    objectName: "artistPage"
 
     formName: "Artist List"
     myModel: artistListJSONModel.model

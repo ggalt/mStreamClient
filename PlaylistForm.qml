@@ -2,6 +2,7 @@ import QtQuick 2.13
 
 ScrollingListView {
     id: playlistForm
+    objectName: "playlistForm"
 
     formName: "Playlist"
     myModel: albumListJSONModel.model

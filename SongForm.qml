@@ -3,7 +3,8 @@ import QtQuick.Controls 2.13
 
 
 ScrollingListView {
-    id: songPage
+    id: songForm
+    objectName: "songForm"
 
     formName: "Song List"
     myModel: songListJSONModel.model

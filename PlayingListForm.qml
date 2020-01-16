@@ -1,8 +1,8 @@
 import QtQuick 2.13
 
 ScrollingListView {
-    id: playlistForm
-    objectName: "playlistForm"
+    id: playlistingForm
+    objectName: "playlistingForm"
 
     formName: "Playlist"
     myModel: currentPlayList.model
