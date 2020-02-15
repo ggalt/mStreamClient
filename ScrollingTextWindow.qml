@@ -21,6 +21,8 @@ Rectangle {
 
     state: "Static"
 
+    Component.objectName: setupScrolling()
+
     function animateText() {
         scrollingText.x = scrollingText.x-scrollStep
 

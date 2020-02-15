@@ -7,7 +7,7 @@ ScrollingListView {
     formName: "Playlist"
     myModel: currentPlayList.model
 
-    myHighLight: highlight
+//    myHighLight: highlight
     myhighlightRangeMode: ListView.NoHighlightRange
 
     property int delegateHeight: 87

@@ -60,7 +60,9 @@ Item {
             progressGradient: Gradient {
                 GradientStop {
                     position: 0
-                    color: "#286efe"
+                    color: "yellow"
+//                    color: "seagreen"
+//                    color: "#286efe"
                 }
 
                 GradientStop {
