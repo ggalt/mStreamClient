@@ -104,6 +104,7 @@ ScrollingListView {
                 height: parent.height - 2
                 width: parent.height - 2
                 onClicked: mainWindow.updatePlaylist(albumLabel.text, "album", "replace")
+                buttonImage: "PlayListClearAdd.png"
             }
         }
     }
