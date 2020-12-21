@@ -39,12 +39,14 @@ Item {
 
         for ( var key in objectArray ) {
             var jo = objectArray[key];
+//            console.log("key", key, "value", jo )
             if( typeof jo === 'string' ) {
                 var jojo = '{ "' + objNm + '" : "'+ jo + '" }'
                 var newJo = JSON.parse(jojo);
                 jsonModel.append(newJo);
             } else {
                 jsonModel.append( jo );
+//                console.log("object", JSON.stringify(jo))
             }
         }
     }
@@ -83,5 +85,18 @@ Item {
         if( typeof jObj === 'object' ) {
             jsonModel.set(index, jObj)
         }
+    }
+
+    function findIndexOf(key,value) {
+        for( var i = 0; i < jsonModel.count; i++ ) {
+            console.log("value of key is", jsonModel.get(i)[key])
+            if( jsonModel.get(i)[key] === value )
+                return i
+        }
+        return -1;
+    }
+
+    function returnObjectContaining(key,value) {
+        return jsonModel.get(findIndexOf(key,value))
     }
 }

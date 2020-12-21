@@ -60,6 +60,8 @@ ApplicationWindow {
     property int gettingAlbums: 0
     property int gettingTitles: 0
 
+    property string currentAlbumArt: ""
+
     function fullyEncodeURI(uri) {
         var retURI = encodeURIComponent(uri)
         retURI = retURI.replace("@", "%40")
@@ -97,7 +99,7 @@ ApplicationWindow {
         xmlhttp.onreadystatechange = function() { // Call a function when the state changes.
             if (xmlhttp.readyState === 4) {
                 if (xmlhttp.status === 200) {
-                    console.log(xmlhttp.responseText)
+                    console.log("ResponseText:", xmlhttp.responseText)
                     var resp = JSON.parse(xmlhttp.responseText)
                     myToken = resp.token
                 } else {
@@ -151,24 +153,24 @@ ApplicationWindow {
     }
 
     function requestArtistAlbums(artistName) {
-//        console.log("Requesting albums for:", artistName)
+        console.log("Requesting albums for:", artistName)
         serverCall("/db/artists-albums", JSON.stringify({ 'artist' : artistName }), "POST", albumRequestResp)
     }
 
     function requestAlbumSongs(albumName) {
-//        console.log("Requesting songs for album:", albumName)
+        console.log("Requesting songs for album:", albumName)
         serverCall("/db/album-songs", JSON.stringify({ 'album' : albumName }), "POST", songRequestResp)
     }
 
     function artistsRequestResp(xmlhttp) {
-//        console.log(xmlhttp.responseText)
+        console.log("artistRequestResp:", xmlhttp.responseText)
         artistListJSONModel.json = xmlhttp.responseText
         artistListJSONModel.query = "$.artists[*]"
         stackView.push( "qrc:/ArtistForm.qml" )
     }
 
     function albumRequestResp(xmlhttp) {
-//        console.log(xmlhttp.responseText.substring(1,5000))
+        console.log("albumRequestResp:", xmlhttp.responseText.substring(1,5000))
         albumListJSONModel.json = xmlhttp.responseText
         albumListJSONModel.query = "$.albums[*]"
         stackView.push("qrc:/AlbumForm.qml")
@@ -224,6 +226,9 @@ ApplicationWindow {
 
     function playlistAddSong(songObj) {   // this actually adds the songs to our playlist
         songObj.playListPosition = playlistAddAt++      // add the playListPosition role
+        if(songObj.metadata["album-art"] === null) {
+            console.log("NULL IMAGE")
+        }
         currentPlayList.shuffleAdd(songObj)
 //        console.log("song object:", JSON.stringify(songObj))
 //        currentPlayList.add(songObj)
@@ -248,8 +253,11 @@ ApplicationWindow {
 
     function playlistAddAlbumResp(resp) {
         var albumResp = JSON.parse(resp.responseText) // for some reason, our delegate doesn't like 'album-art'
+        console.log("playlistAddAlbumResp:", resp.responseText)
         for( var i = 0; i < albumResp.length; i++ ) {
             gettingTitles++;
+            if( albumResp[i].metadata["album-art"] === null )
+                albumResp[i].metadata["album-art"] = albumListJSONModel.returnObjectContaining("name",albumResp[i].metadata["album"])["album_art_file"]
             playlistAddSong(albumResp[i])
         }
         gettingAlbums--;
@@ -276,6 +284,21 @@ ApplicationWindow {
 
     function setGlobalVolume(vol) {
         mainWindow.mediaVolume = vol
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////
+    /// Visible Item
+    /////////////////////////////////////////////////////////////////////////////////
+
+    Keys.onPressed: {
+        if( event.key === Qt.Key_MediaPlay )
+            if( nowPlaying.visible ) {
+                mediaPlayer.play()
+            } else
+        if( event.key === Qt.Key_MediaPause )
+            if( nowPlaying.visible ) {
+                mediaPlayer.pause()
+            }
     }
 
     header: ToolBar {

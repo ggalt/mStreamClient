@@ -60,9 +60,7 @@ Item {
             progressGradient: Gradient {
                 GradientStop {
                     position: 0
-                    color: "yellow"
-//                    color: "seagreen"
-//                    color: "#286efe"
+                    color: "#286efe"
                 }
 
                 GradientStop {
@@ -214,6 +212,17 @@ Item {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
 
+        function pauseOrPlay() {
+            if(mediaPlayer.playbackState === MediaPlayer.PlayingState )
+                mediaPlayer.pause()
+            else
+                mediaPlayer.play()
+            console.log("Song duration:", mediaPlayer.duration)
+            console.log("song position:", mediaPlayer.position)
+            console.log("volume set:", mediaPlayer.volume)
+        }
+
+
         ImageButton {
             id: btnPausePlay
             y: 8
@@ -224,14 +233,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             buttonImage: mediaPlayer.playbackState === MediaPlayer.PlayingState ? "qrc:/pause.png" : "qrc:/play.png"
             onClicked: {
-                if(mediaPlayer.playbackState === MediaPlayer.PlayingState )
-                    mediaPlayer.pause()
-                else
-                    mediaPlayer.play()
-                console.log("Song duration:", mediaPlayer.duration)
-                console.log("song position:", mediaPlayer.position)
-                console.log("volume set:", mediaPlayer.volume)
-
+                controlFrame.pauseOrPlay()
             }
         }
 
@@ -318,6 +320,12 @@ Item {
         }
 
 
+    }
+
+    Keys.onPressed: {
+        console.log("KEY PRESSED:", event.key)
+        if( event.key === Qt.Key_MediaPlay || event.key === Qt.Key_MediaPause )
+            controlFrame.pauseOrPlay()
     }
 
     Component.onDestruction: mainWindow.setGlobalVolume(mediaPlayer.volume)
