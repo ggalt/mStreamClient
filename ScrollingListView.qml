@@ -18,6 +18,8 @@ Item {
 
 
     function setListViewIndex(idx) {
+        console.assert(idx < listView.count || idx === null, "invalid index")
+
         listView.currentIndex = idx
     }
 
