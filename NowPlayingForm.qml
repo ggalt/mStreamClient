@@ -93,7 +93,10 @@ Item {
             anchors.rightMargin: 0
             orientation: Qt.Vertical
             value: mediaPlayer.volume
-            onValueChanged: mediaPlayer.volume = value
+            onValueChanged: {
+                console.log("volume:", value)
+                mediaPlayer.volume = value
+            }
         }
 
     }
@@ -323,9 +326,21 @@ Item {
     }
 
     Keys.onPressed: {
+//                if( event.key === Qt.Key_MediaPlay )
+//                    if( nowPlaying.visible ) {
+//                        mediaPlayer.play()
+//                    } else
+//                if( event.key === Qt.Key_MediaPause )
+//                    if( nowPlaying.visible ) {
+//                        mediaPlayer.pause()
+//                    }
         console.log("KEY PRESSED:", event.key)
         if( event.key === Qt.Key_MediaPlay || event.key === Qt.Key_MediaPause )
             controlFrame.pauseOrPlay()
+        else if( event.key === Qt.Key_VolumeDown )
+            volSlider.value -= 0.05
+        else if( event.key === Qt.Key_VolumeUp )
+            volSlider.value += 0.05
     }
 
     Component.onDestruction: mainWindow.setGlobalVolume(mediaPlayer.volume)

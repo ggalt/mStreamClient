@@ -290,17 +290,6 @@ ApplicationWindow {
     /// Visible Item
     /////////////////////////////////////////////////////////////////////////////////
 
-    Keys.onPressed: {
-        if( event.key === Qt.Key_MediaPlay )
-            if( nowPlaying.visible ) {
-                mediaPlayer.play()
-            } else
-        if( event.key === Qt.Key_MediaPause )
-            if( nowPlaying.visible ) {
-                mediaPlayer.pause()
-            }
-    }
-
     header: ToolBar {
         id: toolBar
         contentHeight: toolButton.implicitHeight
@@ -418,6 +407,10 @@ ApplicationWindow {
             visible: false
             anchors.fill: parent
             mediaVolume: mainWindow.mediaVolume
+            onVisibleChanged: {
+                if( visible )
+                    focus: true
+            }
         }
     }
 
