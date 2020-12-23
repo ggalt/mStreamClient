@@ -197,6 +197,8 @@ ApplicationWindow {
         console.log("Update Playlist", m_item, typeOfItem, action)
         if(action === "replace") {
             currentPlayList.clear()
+            console.log("currentPlayList.count:", currentPlayList.count)
+            console.log("playlist:", currentPlayList.json)
 //            playlistAddAt = 0
         }
 
@@ -253,7 +255,7 @@ ApplicationWindow {
 
     function playlistAddAlbumResp(resp) {
         var albumResp = JSON.parse(resp.responseText) // for some reason, our delegate doesn't like 'album-art'
-        console.log("playlistAddAlbumResp:", resp.responseText)
+//        console.log("playlistAddAlbumResp:", resp.responseText)
         for( var i = 0; i < albumResp.length; i++ ) {
             gettingTitles++;
             if( albumResp[i].metadata["album-art"] === null )

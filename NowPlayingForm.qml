@@ -130,11 +130,11 @@ Item {
 
         function playTrack(which) {
             if(which===_NEXT) {
-                mediaPlayer.source = serverURL+"/media/"+curPlayLst.next()+"?token="+myToken
+                mediaPlayer.source = serverURL+"/media/"+encodeURIComponent(curPlayLst.next())+"?token="+myToken
             } else if( which===_PREVIOUS) {
-                mediaPlayer.source = serverURL+"/media/"+curPlayLst.previous()+"?token="+myToken
+                mediaPlayer.source = serverURL+"/media/"+encodeURIComponent(curPlayLst.previous())+"?token="+myToken
             } else {
-                mediaPlayer.source = serverURL+"/media/"+curPlayLst.current()+"?token="+myToken
+                mediaPlayer.source = serverURL+"/media/"+encodeURIComponent(curPlayLst.current())+"?token="+myToken
             }
             //            mediaPlayer.play()
             displaySongInfo()

@@ -43,6 +43,7 @@ Rectangle {
             scrollingText.horizontalAlignment=Text.AlignLeft
             staticDisplayTimer.start()
         }
+        return "_ScrollingTextWindow"
     }
 
 
