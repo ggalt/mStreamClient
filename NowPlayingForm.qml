@@ -57,7 +57,7 @@ Item {
             anchors.rightMargin: 5
             fillMode: Image.PreserveAspectFit
         }
-Ed%9A3mu@jRQ4kJ1UyHA
+
         ColorProgressBar {
             id: progressBar
             backgroundOpacity: 1
