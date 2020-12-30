@@ -12,6 +12,11 @@ JSONListModel {
 
     signal endOfList
 
+    Logger {
+        id:myLogger
+        debugLevel: 1
+    }
+
     function loop(status) {
         if( status === true )
             looping = true;
@@ -20,7 +25,7 @@ JSONListModel {
     }
 
     function setMusicPlaylistIndex(idx) {
-        console.log("set music play list to index number:", idx)
+        myLogger.log("set music play list to index number:", idx)
         currentIndex = idx
     }
 
@@ -42,8 +47,15 @@ JSONListModel {
         shuffleArray.push(jObj)
     }
 
+    function clearMe() {
+        clear()
+        playListArray.length = 0
+        shuffleArray.length = 0
+    }
+
     function updateList() {
         clear()
+        myLogger.log("Playlist Array:", playListArray)
         if(shuffle) {
            for( var c=0; c < shuffleArray.length; c++) {
                add(shuffleArray[c]);
@@ -104,6 +116,6 @@ JSONListModel {
     }
 
     onCurrentIndexChanged: {
-        console.log("current index of playlist is:", currentIndex)
+        myLogger.log("current index of playlist is:", currentIndex)
     }
 }

@@ -20,6 +20,11 @@ ScrollingListView {
         setListViewIndex(idx)
     }
 
+    function setCurrentModel(newModel) {
+        console.log("new model")
+        myModel = newModel
+    }
+
     myDelegate:Item {
         id: songTitleDelegate
         height: delegateHeight

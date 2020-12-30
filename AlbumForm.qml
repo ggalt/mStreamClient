@@ -29,7 +29,7 @@ ScrollingListView {
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 anchors.margins: 1
-                anchors.rightMargin: 0
+                anchors.rightMargin: 5
                 anchors.topMargin: 0
                 anchors.bottomMargin: 0
                 anchors.leftMargin: 2
@@ -101,8 +101,8 @@ ScrollingListView {
                 anchors.right: parent.right
                 anchors.verticalCenterOffset: 0
                 anchors.rightMargin: 4
-                height: parent.height - 2
-                width: parent.height - 2
+                height: parent.height / 2
+                width: parent.height / 2
                 onClicked: mainWindow.updatePlaylist(albumLabel.text, "album", "replace")
                 buttonImage: "PlayListClearAdd.png"
             }

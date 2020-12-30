@@ -28,5 +28,6 @@
         <file>ScrollingListView.qml</file>
         <file>MusicPlaylist.qml</file>
         <file>PlayListClearAdd.png</file>
+        <file>Logger.qml</file>
     </qresource>
 </RCC>

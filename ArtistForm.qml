@@ -14,7 +14,7 @@ ScrollingListView {
     myDelegate: Item {
         id: artistDelegate
         height: 42
-        width: parent.width
+        width: stackView.width
 
         property variant myData: model
 

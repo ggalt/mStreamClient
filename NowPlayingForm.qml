@@ -22,6 +22,11 @@ Item {
 
     property alias mediaVolume: mediaPlayer.volume
 
+    Logger {
+        id:myLogger
+        debugLevel: 1
+    }
+
     function startPlay() {
         isPlaying = true;
         mediaPlayer.startPlaying()
@@ -52,7 +57,7 @@ Item {
             anchors.rightMargin: 5
             fillMode: Image.PreserveAspectFit
         }
-
+Ed%9A3mu@jRQ4kJ1UyHA
         ColorProgressBar {
             id: progressBar
             backgroundOpacity: 1
@@ -94,7 +99,7 @@ Item {
             orientation: Qt.Vertical
             value: mediaPlayer.volume
             onValueChanged: {
-                console.log("volume:", value)
+                myLogger.log("volume:", value)
                 mediaPlayer.volume = value
             }
         }
@@ -109,7 +114,7 @@ Item {
         autoPlay: true
 
         function endOfPlaylist() {
-            console.log("Playlist ended and received by player");
+            myLogger.log("Playlist ended and received by player");
             isPlaying=false;
         }
 
@@ -129,6 +134,7 @@ Item {
         }
 
         function playTrack(which) {
+            myLogger.log("playing track, playlist lenght:", curPlayLst.count)
             if(which===_NEXT) {
                 mediaPlayer.source = serverURL+"/media/"+encodeURIComponent(curPlayLst.next())+"?token="+myToken
             } else if( which===_PREVIOUS) {
@@ -141,22 +147,22 @@ Item {
         }
 
         onPlaybackStateChanged: {
-            console.log("onPlaybackStateChanged", playbackState)
+            myLogger.log("onPlaybackStateChanged", playbackState)
             if( playbackState === MediaPlayer.PlayingState ) {
                 displaySongInfo()
             } else if( playbackState === MediaPlayer.PausedState ) {
-                console.log("Paused State")
+                myLogger.log("Paused State")
             } else if( playbackState === MediaPlayer.StoppedState ) {
-                console.log("Stopped State")
+                myLogger.log("Stopped State")
             }
         }
 
         onPlaylistChanged: {
-            console.log("onPlaylistChanged")
+            myLogger.log("onPlaylistChanged")
         }
 
         onSourceChanged: {
-            console.log("onSourceChanged")
+            myLogger.log("onSourceChanged")
         }
 
         onStatusChanged: {
@@ -166,7 +172,7 @@ Item {
                 playTrack(_CURRENT)
             }
 
-            console.log("onStatusChanged", getStatus(), "error state:", errorString)
+            myLogger.log("onStatusChanged", getStatus(), "error state:", errorString)
 
         }
 
@@ -220,9 +226,9 @@ Item {
                 mediaPlayer.pause()
             else
                 mediaPlayer.play()
-            console.log("Song duration:", mediaPlayer.duration)
-            console.log("song position:", mediaPlayer.position)
-            console.log("volume set:", mediaPlayer.volume)
+            myLogger.log("Song duration:", mediaPlayer.duration)
+            myLogger.log("song position:", mediaPlayer.position)
+            myLogger.log("volume set:", mediaPlayer.volume)
         }
 
 
@@ -250,7 +256,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             buttonImage: "reverse.png"
             onClicked: {
-                console.log("previous pressed")
+                myLogger.log("previous pressed")
                 mediaPlayer.playTrack(_PREVIOUS)
                 //                mediaPlayer.source = serverURL+"/media/"+curPlayLst.previous()+"?token="+myToken
             }
@@ -266,7 +272,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             buttonImage: "forward.png"
             onClicked: {
-                console.log("next pressed")
+                myLogger.log("next pressed")
                 mediaPlayer.playTrack(_NEXT)
                 //                mediaPlayer.source = serverURL+"/media/"+curPlayLst.next()+"?token="+myToken
             }
@@ -298,7 +304,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             buttonImage: checked ? "shuffle.png" : "noshuffle.png"
             onClicked: {
-                console.log("form name is:", stackView.currentItem.objectName)
+                myLogger.log("form name is:", stackView.currentItem.objectName)
                 if( btnShuffle.checked ) {
                     curPlayLst.shuffleOn()
                     shuffleOn()
@@ -306,7 +312,7 @@ Item {
                     //                    if(stackView.currentItem.objectName==="playlistForm") {
                     //                        stackView.pop()
                     //                        stackView.push("qrc:/ShuffledPlayingListForm.qml")
-                    //                        console.log("pushed shuffle view")
+                    //                        myLogger.log("pushed shuffle view")
                     //                    }
                 } else {
                     curPlayLst.shuffleOff()
@@ -315,7 +321,7 @@ Item {
                     //                    if(stackView.currentItem.objectName==="shuffledPlaylistForm") {
                     //                        stackView.pop()
                     //                        stackView.push("qrc:/PlayingListForm.qml")
-                    //                        console.log("pushed standard view")
+                    //                        myLogger.log("pushed standard view")
                     //                    }
                 }
 
@@ -334,7 +340,7 @@ Item {
 //                    if( nowPlaying.visible ) {
 //                        mediaPlayer.pause()
 //                    }
-        console.log("KEY PRESSED:", event.key)
+        myLogger.log("KEY PRESSED:", event.key)
         if( event.key === Qt.Key_MediaPlay || event.key === Qt.Key_MediaPause )
             controlFrame.pauseOrPlay()
         else if( event.key === Qt.Key_VolumeDown )
