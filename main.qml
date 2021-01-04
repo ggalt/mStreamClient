@@ -50,7 +50,7 @@ ApplicationWindow {
 
     Logger {
         id:myLogger
-        debugLevel: 1
+        debugLevel: mainWindow.globalDebugLevel
     }
 
     property alias currentTrack: currentPlayList.currentIndex
@@ -71,6 +71,8 @@ ApplicationWindow {
     property int gettingTitles: 0
 
     property string currentAlbumArt: ""
+
+    property int globalDebugLevel: 0        // 0 = critical, 1 = warn, 2 = all
 
     function fullyEncodeURI(uri) {
         var retURI = encodeURIComponent(uri)

@@ -24,7 +24,7 @@ Item {
 
     Logger {
         id:myLogger
-        debugLevel: 1
+        debugLevel: mainWindow.globalDebugLevel
     }
 
     function startPlay() {
@@ -44,6 +44,14 @@ Item {
         anchors.rightMargin: 0
         anchors.top: parent.top
         anchors.topMargin: 0
+
+        Image {
+            id: logoImage
+            anchors.fill: parent
+            source: "ms-icon-310x310.png"
+            fillMode: Image.PreserveAspectFit
+            visible: true
+        }
 
         Image {
             id: coverImage
@@ -103,6 +111,7 @@ Item {
                 mediaPlayer.volume = value
             }
         }
+
 
     }
 

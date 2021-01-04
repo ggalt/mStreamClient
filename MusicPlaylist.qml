@@ -14,7 +14,7 @@ JSONListModel {
 
     Logger {
         id:myLogger
-        debugLevel: 1
+        debugLevel: mainWindow.globalDebugLevel
     }
 
     function loop(status) {

@@ -66,6 +66,7 @@ ScrollingListView {
 
                     onPressAndHold: {
                         console.log("Press and Hold for:", albumLabel.text)
+                        contextMenu.popup()
                     }
 
                     onClicked: {

@@ -29,5 +29,10 @@
         <file>MusicPlaylist.qml</file>
         <file>PlayListClearAdd.png</file>
         <file>Logger.qml</file>
+        <file>ms-icon-70x70.png</file>
+        <file>ms-icon-144x144.png</file>
+        <file>ms-icon-150x150.png</file>
+        <file>ms-icon-310x310.png</file>
+        <file>mStreamClient.ico</file>
     </qresource>
 </RCC>

@@ -23,6 +23,19 @@ Item {
         listView.currentIndex = idx
     }
 
+    function setLetterDisplayVisible(val) {
+        if( val === true || val === false ) {
+            lblLetter.visible = val
+        }
+    }
+
+    Component.onCompleted: {
+        if (listView.count > 10)
+            setLetterDisplayVisible(true)
+        else
+            setLetterDisplayVisible(false)
+    }
+
     ScrollView {
         anchors.fill: parent
 
@@ -55,6 +68,7 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
+                visible: true
 
                 state: "inactive"
 
